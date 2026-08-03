@@ -1,0 +1,25 @@
+{
+  "start_cash": 10000.0,
+  "currency": "USD",
+  "status": "pending_open",
+  "entry_date": "2026-08-03",
+  "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
+  "fractional_shares": true,
+  "cash": 10000.0,
+  "last_updated": null,
+  "last_price_date": null,
+  "positions": [
+    {"ticker":"MSFT","name":"Microsoft Corp.","sector":"Technology","target":0.15,"driver":"Enterprise AI & Azure Cloud Leadership","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"AMZN","name":"Amazon.com Inc.","sector":"Consumer Discretionary","target":0.15,"driver":"AWS Cloud & E-commerce Dominance","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"GOOGL","name":"Alphabet Inc.","sector":"Communication Services","target":0.15,"driver":"Generative AI Search & YouTube Ads","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"JPM","name":"JPMorgan Chase & Co.","sector":"Financials","target":0.10,"driver":"Market Share Expansion & Banking Scale","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"CAT","name":"Caterpillar Inc.","sector":"Industrials","target":0.10,"driver":"Global Infrastructure & Manufacturing Reshoring","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"NEE","name":"NextEra Energy Inc.","sector":"Utilities","target":0.10,"driver":"Clean Energy Supply for AI Data Centers","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"XOM","name":"Exxon Mobil Corp.","sector":"Energy","target":0.10,"driver":"Low-cost Production & Carbon Capture Tech","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"LIN","name":"Linde plc","sector":"Materials","target":0.05,"driver":"Industrial Gas for Semiconductor & Hydrogen","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"JNJ","name":"Johnson & Johnson","sector":"Healthcare","target":0.05,"driver":"New Drug Pipelines & MedTech Robotics","shares":0,"entry":null,"last":null,"prev_close":null},
+    {"ticker":"PG","name":"Procter & Gamble Co.","sector":"Consumer Staples","target":0.05,"driver":"Strong Pricing Power & Dividend Reinvestment","shares":0,"entry":null,"last":null,"prev_close":null}
+  ],
+  "history": [],
+  "log": []
+}

@@ -1,0 +1,46 @@
+name: Update paper-trade portfolio
+
+on:
+  schedule:
+    # 21:30 UTC on weekdays = 17:30 ET (summer) / 16:30 ET (winter) -> always after the US close.
+    # GitHub may delay cron runs by up to ~1h during peak; that is fine, the job is idempotent.
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch: {}        # lets you run it manually from the Actions tab
+  push:
+    branches: [main]
+    paths: ["build.py", "update.py", "portfolio.json"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-trade
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch prices and update portfolio
+        run: python3 update.py
+
+      - name: Rebuild dashboard
+        run: python3 build.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "paper-trade-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- portfolio.json index.html; then
+            echo "No changes."
+            exit 0
+          fi
+          git add portfolio.json index.html
+          git commit -m "chore: update portfolio $(date -u +'%Y-%m-%d')"
+          git push
