@@ -8,10 +8,12 @@ on:
   workflow_dispatch: {}        # lets you run it manually from the Actions tab
   push:
     branches: [main]
-    paths: ["build.py", "update.py", "portfolio.json"]
+    paths: ["build.py", "update.py", "portfolio.json", ".github/workflows/update.yml"]
 
 permissions:
-  contents: write
+  contents: write   # commit the refreshed portfolio.json / index.html
+  pages: write      # publish to GitHub Pages
+  id-token: write   # required by actions/deploy-pages
 
 concurrency:
   group: paper-trade
@@ -46,9 +48,37 @@ jobs:
           git config user.name  "paper-trade-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git diff --quiet -- portfolio.json index.html; then
-            echo "No changes."
-            exit 0
+            echo "No changes to commit."
+          else
+            git add portfolio.json index.html
+            git commit -m "chore: update portfolio $(date -u +'%Y-%m-%d')"
+            git push
           fi
-          git add portfolio.json index.html
-          git commit -m "chore: update portfolio $(date -u +'%Y-%m-%d')"
-          git push
+
+      - name: Package site for Pages
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp portfolio.json _site/portfolio.json
+          touch _site/.nojekyll
+          echo "Site contents:" && ls -la _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Show the live URL
+        run: |
+          echo "::notice title=Dashboard is live::${{ steps.deployment.outputs.page_url }}"
+          echo "Dashboard: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY

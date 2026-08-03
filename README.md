@@ -48,10 +48,12 @@ Repo → **Settings → Actions → General** → เลื่อนลงหา
 
 ### 4. เปิด GitHub Pages
 
-Repo → **Settings → Pages** → *Source*: **Deploy from a branch** →
-Branch: **main**, folder: **/ (root)** → Save.
+Repo → **Settings → Pages** → *Source*: เลือก **GitHub Actions** (ไม่ใช่ "Deploy from a branch")
 
-หลังจากนั้นประมาณ 1 นาที dashboard จะอยู่ที่:
+workflow ในโปรเจกต์นี้ deploy Pages ให้เอง แล้วพิมพ์ URL จริงออกมาใน Actions log ทุกครั้งที่รัน
+ถ้าพังก็เห็น error ชัดเจน ต่างจากโหมด branch ที่เงียบเวลามีปัญหา
+
+dashboard จะอยู่ที่:
 
 ```
 https://mninsuwan-ai.github.io/paper-trade/
@@ -118,8 +120,11 @@ python3 update.py && python3 build.py
 
 ## Troubleshooting
 
-- **หน้าเว็บ 404** → ข้อ 4 ยังไม่ได้เปิด Pages (เช็คเร็วๆ: หน้า repo ต้องมีลิงก์เว็บไซต์โผล่ในกล่อง About
-  ด้านขวา และ Settings → Pages ต้องขึ้น "Your site is live at ...") หรือเพิ่ง Save ไป ยัง deploy ไม่เสร็จ รอ 1–2 นาที
+- **หน้าเว็บ 404** → Settings → Pages ต้องตั้ง Source เป็น **GitHub Actions** ถ้าตั้งเป็น "Deploy from a branch"
+  งาน `deploy` จะล้มพร้อมข้อความประมาณ *"Get Pages site failed"* / *"Not configured for GitHub Actions"*
+  ตั้งใหม่แล้ว Run workflow อีกรอบ จบงาน `deploy` จะพิมพ์ URL ที่ใช้ได้จริงออกมาให้
+- **ค้างที่ "Your GitHub Pages site is currently being built"** → อาการของโหมด branch ที่ build ไม่จบ
+  สลับ Source ไปเป็น GitHub Actions ตามข้อ 4 แล้วปัญหานี้จะหายไป
 - **`Price fetch failed for: MSFT, AMZN, ...` ทุกตัว** → Stooq/Yahoo บล็อก IP ของ runner ทำตามข้อ 5
   ใส่ `ALPHAVANTAGE_KEY` ดูขั้น *Probe price sources* ใน Actions log จะบอกว่าแต่ละแหล่งตอบอะไรกลับมา
 - **`buy deferred` / `open not published yet`** → รันเร็วไป ตลาดของวัน `entry_date` ยังไม่ปิด รอแล้ว Run workflow ใหม่
