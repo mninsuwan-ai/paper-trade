@@ -57,12 +57,31 @@ Branch: **main**, folder: **/ (root)** → Save.
 https://mninsuwan-ai.github.io/paper-trade/
 ```
 
-### 5. รันครั้งแรกเพื่อซื้อ
+### 5. ใส่ Alpha Vantage key (แนะนำอย่างยิ่ง)
+
+Stooq กับ Yahoo มักบล็อก IP ของ GitHub runner (ตอบ 403 / 429) ทำให้ดึงราคาไม่ได้เลย
+ทางแก้ที่ชัวร์คือใส่ API key ฟรีของ Alpha Vantage:
+
+1. ขอ key ที่ <https://www.alphavantage.co/support/#api-key> (กรอกอีเมล ได้ทันที ไม่ต้องผูกบัตร)
+2. Repo → **Settings → Secrets and variables → Actions → New repository secret**
+3. Name: `ALPHAVANTAGE_KEY` — Secret: key ที่ได้มา → Add secret
+
+โควต้าฟรี 25 requests/วัน พอร์ตนี้ใช้วันละ 10 — เหลือเฟือ
+ถ้าไม่ใส่ก็ยังรันได้ สคริปต์จะไปลอง Stooq → Yahoo ต่อ แต่ไม่การันตี
+
+### 6. รันครั้งแรกเพื่อซื้อ
 
 Repo → แท็บ **Actions** → *Update paper-trade portfolio* → **Run workflow**.
 
 รอบแรกจะดึงราคา **Open ของ 2026-08-03** มาเป็นราคาเข้าซื้อ คำนวณจำนวนหุ้น แล้ว commit
 `portfolio.json` + `index.html` กลับเข้า repo อัตโนมัติ
+
+> ต้องรันหลังตลาดสหรัฐปิดของวันนั้น (หลัง 04:00 น. ไทยของเช้าถัดไป) ถ้ารันก่อนหน้านั้น
+> ราคา Open ยังไม่ถูกเผยแพร่ สคริปต์จะเลื่อนการซื้อออกไปและบอกใน log ว่า `buy deferred`
+> ไม่ทำให้ข้อมูลเสีย รันซ้ำได้เรื่อยๆ
+
+ขั้นแรกของ workflow ชื่อ **Probe price sources** จะทดสอบทั้ง 3 แหล่งกับ MSFT แล้วพิมพ์ผลไว้ใน log
+ถ้ามีปัญหาให้ดูตรงนี้ก่อนเสมอ
 
 ---
 
@@ -86,6 +105,7 @@ Workflow รันเองทุกวันจันทร์–ศุกร�
 ## รันเองบนเครื่อง
 
 ```bash
+python3 update.py --probe     # ทดสอบว่าแหล่งราคาไหนใช้ได้บ้าง
 python3 update.py --dry-run   # ดูว่าจะได้ราคาอะไรบ้าง ไม่เขียนไฟล์
 python3 update.py && python3 build.py
 ```
@@ -98,6 +118,10 @@ python3 update.py && python3 build.py
 
 ## Troubleshooting
 
+- **หน้าเว็บ 404** → ข้อ 4 ยังไม่ได้เปิด Pages (เช็คเร็วๆ: หน้า repo ต้องมีลิงก์เว็บไซต์โผล่ในกล่อง About
+  ด้านขวา และ Settings → Pages ต้องขึ้น "Your site is live at ...") หรือเพิ่ง Save ไป ยัง deploy ไม่เสร็จ รอ 1–2 นาที
+- **`Price fetch failed for: MSFT, AMZN, ...` ทุกตัว** → Stooq/Yahoo บล็อก IP ของ runner ทำตามข้อ 5
+  ใส่ `ALPHAVANTAGE_KEY` ดูขั้น *Probe price sources* ใน Actions log จะบอกว่าแต่ละแหล่งตอบอะไรกลับมา
+- **`buy deferred` / `open not published yet`** → รันเร็วไป ตลาดของวัน `entry_date` ยังไม่ปิด รอแล้ว Run workflow ใหม่
 - **Actions รันแล้วแต่ไม่ commit** → ข้อ 3 ยังไม่ได้ตั้ง Read and write permissions
-- **หน้าเว็บ 404** → ข้อ 4 ยังไม่ได้เปิด Pages หรือรอ deploy ยังไม่เสร็จ
 - **บางตัวราคาไม่อัพเดท** → ผู้ให้ข้อมูลล่มชั่วคราว สคริปต์จะเก็บราคาเดิมไว้และบันทึกไว้ใน activity log แล้วลองใหม่วันถัดไป
