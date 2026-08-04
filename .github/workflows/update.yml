@@ -2,22 +2,28 @@ name: Update paper-trade portfolio
 
 on:
   schedule:
-    # 21:30 UTC on weekdays = 17:30 ET (summer) / 16:30 ET (winter) -> always after the US close.
-    # GitHub may delay cron runs by up to ~1h during peak; that is fine, the job is idempotent.
-    - cron: "30 21 * * 1-5"
+    # GitHub does not guarantee scheduled runs: jobs queued on the hour or half hour sit in the
+    # busiest slots and can be delayed for hours or dropped entirely. So: odd minutes, and a
+    # second attempt later in the day. The job is idempotent, running twice changes nothing.
+    #
+    # 01:07 UTC Tue-Sat = 08:07 Thai time, after Mon-Fri US closes.
+    - cron: "7 1 * * 2-6"
+    # 05:23 UTC Tue-Sat = 12:23 Thai time - safety net if the first slot was dropped.
+    - cron: "23 5 * * 2-6"
   workflow_dispatch: {}        # lets you run it manually from the Actions tab
   push:
     branches: [main]
     paths: ["build.py", "update.py", "portfolio.json", ".github/workflows/update.yml"]
 
 permissions:
-  contents: write   # commit the refreshed portfolio.json / index.html
-  pages: write      # publish to GitHub Pages
-  id-token: write   # required by actions/deploy-pages
+  contents: write   # commit the refreshed portfolio.json / index.html back to main
 
 concurrency:
   group: paper-trade
   cancel-in-progress: false
+
+# GitHub Pages is served straight from main / (root) via "Deploy from a branch".
+# Committing index.html below is all it takes to publish - no deploy job needed.
 
 jobs:
   update:
@@ -43,7 +49,7 @@ jobs:
       - name: Rebuild dashboard
         run: python3 build.py
 
-      - name: Commit if changed
+      - name: Commit and publish
         run: |
           git config user.name  "paper-trade-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -55,30 +61,26 @@ jobs:
             git push
           fi
 
-      - name: Package site for Pages
+      - name: Summary
         run: |
-          mkdir -p _site
-          cp index.html _site/index.html
-          cp portfolio.json _site/portfolio.json
-          touch _site/.nojekyll
-          echo "Site contents:" && ls -la _site
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  deploy:
-    needs: update
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Show the live URL
-        run: |
-          echo "::notice title=Dashboard is live::${{ steps.deployment.outputs.page_url }}"
-          echo "Dashboard: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          python3 - <<'PY' >> $GITHUB_STEP_SUMMARY
+          import json
+          d = json.load(open("portfolio.json"))
+          start = d["start_cash"]
+          if d["status"] != "open":
+              print(f"### Buy not executed yet\n\nWaiting on the {d['entry_date']} open. "
+                    "See the log above for which tickers are missing.")
+          else:
+              total = sum((p["last"] or p["entry"]) * p["shares"] for p in d["positions"]) + d["cash"]
+              pl = total - start
+              print(f"### Portfolio: ${total:,.2f}  ({pl:+,.2f} / {pl/start*100:+.2f}%)\n")
+              print(f"Prices as of **{d['last_price_date']}**\n")
+              print("| Ticker | Entry | Last | P/L % |")
+              print("|---|---|---|---|")
+              for p in sorted(d["positions"],
+                              key=lambda x: -((x["last"] or x["entry"]) / x["entry"] - 1)):
+                  chg = ((p["last"] or p["entry"]) / p["entry"] - 1) * 100
+                  print(f"| {p['ticker']} | {p['entry']:.2f} | {p['last']:.2f} | {chg:+.2f}% |")
+          PY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Dashboard: https://mninsuwan-ai.github.io/paper-trade/" >> $GITHUB_STEP_SUMMARY

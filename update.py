@@ -262,6 +262,15 @@ def main():
 
     blocked = failures + waiting
 
+    if not failures:
+        # Drop stale "fetch failed" notices once everything is healthy again -
+        # they are noise on the dashboard's activity log.
+        kept = [e for e in d.get("log", [])
+                if not str(e.get("note", "")).startswith("Price fetch failed")]
+        if len(kept) != len(d.get("log", [])):
+            log(f"  (cleared {len(d['log']) - len(kept)} stale fetch-failure log entries)")
+        d["log"] = kept
+
     if need_entry and not blocked:
         cost = sum((p["entry"] or 0) * (p["shares"] or 0) for p in positions)
         d["cash"] = round(start - cost, 6)

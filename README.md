@@ -48,10 +48,10 @@ Repo → **Settings → Actions → General** → เลื่อนลงหา
 
 ### 4. เปิด GitHub Pages
 
-Repo → **Settings → Pages** → *Source*: เลือก **GitHub Actions** (ไม่ใช่ "Deploy from a branch")
+Repo → **Settings → Pages** → *Source*: **Deploy from a branch** →
+Branch: **main**, folder: **/ (root)** → Save
 
-workflow ในโปรเจกต์นี้ deploy Pages ให้เอง แล้วพิมพ์ URL จริงออกมาใน Actions log ทุกครั้งที่รัน
-ถ้าพังก็เห็น error ชัดเจน ต่างจากโหมด branch ที่เงียบเวลามีปัญหา
+workflow แค่ commit `index.html` กลับเข้า main แล้ว Pages เสิร์ฟให้เอง ไม่มี deploy job ให้พังเพิ่ม
 
 dashboard จะอยู่ที่:
 
@@ -89,10 +89,14 @@ Repo → แท็บ **Actions** → *Update paper-trade portfolio* → **Run w
 
 ## หลังจากนี้
 
-Workflow รันเองทุกวันจันทร์–ศุกร์ เวลา **21:30 UTC** (≈ 04:30 น. ไทยของเช้าวันถัดไป) ซึ่งเป็นเวลาหลังตลาดสหรัฐปิดเสมอ
+Workflow รันเองวันอังคาร–เสาร์ (UTC) เวลา **01:07 UTC ≈ 08:07 น. ไทย** ซึ่งครอบคลุมการปิดตลาดของจันทร์–ศุกร์ US
 ทั้งฤดูร้อน (EDT) และฤดูหนาว (EST) — ไม่ต้องเปิดคอมพิวเตอร์ทิ้งไว้
 
-> GitHub อาจดีเลย์ cron ได้ถึง ~1 ชม. ในช่วงคนใช้เยอะ ไม่มีปัญหาเพราะ job รันซ้ำได้โดยผลไม่เปลี่ยน
+มีรอบสำรองอีกรอบที่ **05:23 UTC ≈ 12:23 น. ไทย**
+
+> GitHub **ไม่การันตี**ว่า scheduled run จะรันตรงเวลา และอาจ *ข้ามไปเลย* ถ้าตั้งไว้ตรงนาที `:00` หรือ `:30`
+> ซึ่งเป็นช่วงที่คนตั้งกระจุกกัน — นั่นคือเหตุผลที่ cron ในไฟล์นี้ตั้งนาทีแปลกๆ และมี 2 รอบ
+> job รันซ้ำได้โดยผลไม่เปลี่ยน จึงไม่มีผลเสียถ้ารันทั้งสองรอบ
 
 ## ไฟล์ในโปรเจกต์
 
@@ -120,13 +124,14 @@ python3 update.py && python3 build.py
 
 ## Troubleshooting
 
-- **หน้าเว็บ 404** → Settings → Pages ต้องตั้ง Source เป็น **GitHub Actions** ถ้าตั้งเป็น "Deploy from a branch"
-  งาน `deploy` จะล้มพร้อมข้อความประมาณ *"Get Pages site failed"* / *"Not configured for GitHub Actions"*
-  ตั้งใหม่แล้ว Run workflow อีกรอบ จบงาน `deploy` จะพิมพ์ URL ที่ใช้ได้จริงออกมาให้
-- **ค้างที่ "Your GitHub Pages site is currently being built"** → อาการของโหมด branch ที่ build ไม่จบ
-  สลับ Source ไปเป็น GitHub Actions ตามข้อ 4 แล้วปัญหานี้จะหายไป
+- **หน้าเว็บ 404 / ค้างที่ "currently being built"** → deploy รอบแรกของ repo ใหม่ใช้เวลาสักพัก
+  รอ 2-3 นาทีแล้ว hard refresh (Ctrl+F5) ถ้ายังไม่ขึ้นให้กด Save ที่ Settings → Pages ซ้ำอีกครั้ง
+- **`deploy-pages` / `Get Pages site failed`** → ถ้าเคยเพิ่ม job ที่ใช้ `actions/deploy-pages` ให้เอาออก
+  โปรเจกต์นี้ใช้โหมด branch ไม่ต้องมี deploy job
 - **`Price fetch failed for: MSFT, AMZN, ...` ทุกตัว** → Stooq/Yahoo บล็อก IP ของ runner ทำตามข้อ 5
   ใส่ `ALPHAVANTAGE_KEY` ดูขั้น *Probe price sources* ใน Actions log จะบอกว่าแต่ละแหล่งตอบอะไรกลับมา
 - **`buy deferred` / `open not published yet`** → รันเร็วไป ตลาดของวัน `entry_date` ยังไม่ปิด รอแล้ว Run workflow ใหม่
 - **Actions รันแล้วแต่ไม่ commit** → ข้อ 3 ยังไม่ได้ตั้ง Read and write permissions
+- **ถึงเวลาแล้วแต่ไม่รันเอง** → ปกติของ GitHub cron ที่ไม่การันตีเวลา กด Run workflow เองได้เลย
+  ถ้าโดนข้ามบ่อยให้ขยับนาทีใน cron หนีจาก `:00` / `:30` (ดูหัวข้อ *หลังจากนี้*)
 - **บางตัวราคาไม่อัพเดท** → ผู้ให้ข้อมูลล่มชั่วคราว สคริปต์จะเก็บราคาเดิมไว้และบันทึกไว้ใน activity log แล้วลองใหม่วันถัดไป
