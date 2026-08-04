@@ -17,13 +17,16 @@ on:
 
 permissions:
   contents: write   # commit the refreshed portfolio.json / index.html back to main
+  pages: write      # publish to GitHub Pages
+  id-token: write   # required by actions/deploy-pages
 
 concurrency:
   group: paper-trade
   cancel-in-progress: false
 
-# GitHub Pages is served straight from main / (root) via "Deploy from a branch".
-# Committing index.html below is all it takes to publish - no deploy job needed.
+# Settings -> Pages -> Source must be "GitHub Actions" (not "Deploy from a branch").
+# The deploy job below is what actually publishes the site; committing index.html to
+# main only keeps the repo in sync, it does NOT update the published page on its own.
 
 jobs:
   update:
@@ -103,5 +106,33 @@ jobs:
                   chg = ((p["last"] or p["entry"]) / p["entry"] - 1) * 100
                   print(f"| {p['ticker']} | {p['entry']:.2f} | {p['last']:.2f} | {chg:+.2f}% |")
           PY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Dashboard: https://mninsuwan-ai.github.io/paper-trade/" >> $GITHUB_STEP_SUMMARY
+
+      - name: Package site for Pages
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp portfolio.json _site/portfolio.json
+          touch _site/.nojekyll
+          ls -la _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  # This job is what actually publishes the dashboard. Without it the page never
+  # changes, no matter how many times index.html is committed to main.
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Show the live URL
+        run: |
+          echo "::notice title=Dashboard published::${{ steps.deployment.outputs.page_url }}"
+          echo "Dashboard: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY

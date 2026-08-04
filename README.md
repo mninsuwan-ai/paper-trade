@@ -48,10 +48,11 @@ Repo → **Settings → Actions → General** → เลื่อนลงหา
 
 ### 4. เปิด GitHub Pages
 
-Repo → **Settings → Pages** → *Source*: **Deploy from a branch** →
-Branch: **main**, folder: **/ (root)** → Save
+Repo → **Settings → Pages** → *Source*: เลือก **GitHub Actions** (ไม่ใช่ "Deploy from a branch")
 
-workflow แค่ commit `index.html` กลับเข้า main แล้ว Pages เสิร์ฟให้เอง ไม่มี deploy job ให้พังเพิ่ม
+> สำคัญ: job `deploy` ใน workflow คือตัวที่เผยแพร่หน้าเว็บจริงๆ การ commit `index.html` เข้า main
+> เป็นแค่การเก็บไฟล์ไว้ใน repo — **ไม่ได้ทำให้หน้าเว็บอัพเดท** ถ้าลบ job `deploy` ออก
+> หน้าเว็บจะค้างอยู่ที่ deployment ล่าสุดตลอดไป
 
 dashboard จะอยู่ที่:
 
@@ -124,10 +125,11 @@ python3 update.py && python3 build.py
 
 ## Troubleshooting
 
-- **หน้าเว็บ 404 / ค้างที่ "currently being built"** → deploy รอบแรกของ repo ใหม่ใช้เวลาสักพัก
-  รอ 2-3 นาทีแล้ว hard refresh (Ctrl+F5) ถ้ายังไม่ขึ้นให้กด Save ที่ Settings → Pages ซ้ำอีกครั้ง
-- **`deploy-pages` / `Get Pages site failed`** → ถ้าเคยเพิ่ม job ที่ใช้ `actions/deploy-pages` ให้เอาออก
-  โปรเจกต์นี้ใช้โหมด branch ไม่ต้องมี deploy job
+- **เว็บค้างที่ข้อมูลเก่า ทั้งที่ `portfolio.json` บน main ใหม่แล้ว** → job `deploy` ไม่ได้รัน
+  เทียบกันได้ที่ `raw.githubusercontent.com/.../main/portfolio.json` (ของจริงใน repo) กับ
+  `mninsuwan-ai.github.io/paper-trade/portfolio.json` (ของที่เผยแพร่) ถ้า `last_updated` ไม่ตรงกันคือ deploy ไม่ทำงาน
+- **`deploy-pages` ฟ้อง `Get Pages site failed` / 404** → Settings → Pages ยังไม่ได้ตั้ง Source เป็น GitHub Actions
+- **หน้าเว็บ 404 ตอนตั้งครั้งแรก** → deploy รอบแรกใช้เวลาสักพัก รอ 2-3 นาทีแล้ว hard refresh (Ctrl+F5)
 - **`Price fetch failed for: MSFT, AMZN, ...` ทุกตัว** → Stooq/Yahoo บล็อก IP ของ runner ทำตามข้อ 5
   ใส่ `ALPHAVANTAGE_KEY` ดูขั้น *Probe price sources* ใน Actions log จะบอกว่าแต่ละแหล่งตอบอะไรกลับมา
 - **`buy deferred` / `open not published yet`** → รันเร็วไป ตลาดของวัน `entry_date` ยังไม่ปิด รอแล้ว Run workflow ใหม่
