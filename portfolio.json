@@ -1,13 +1,13 @@
 {
   "start_cash": 10000.0,
   "currency": "USD",
-  "status": "pending_open",
+  "status": "open",
   "entry_date": "2026-08-03",
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
-  "cash": 10000.0,
-  "last_updated": "2026-08-03 15:18 UTC",
-  "last_price_date": null,
+  "cash": 0.000491,
+  "last_updated": "2026-08-04 01:23 UTC",
+  "last_price_date": "2026-08-03",
   "positions": [
     {
       "ticker": "MSFT",
@@ -15,10 +15,10 @@
       "sector": "Technology",
       "target": 0.15,
       "driver": "Enterprise AI & Azure Cloud Leadership",
-      "shares": 0,
-      "entry": null,
-      "last": 464.72,
-      "prev_close": 451.1
+      "shares": 3.150433,
+      "entry": 476.125,
+      "last": 487.65,
+      "prev_close": 464.72
     },
     {
       "ticker": "AMZN",
@@ -28,7 +28,7 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 284.68,
+      "last": 284.02,
       "prev_close": 271.58
     },
     {
@@ -37,10 +37,10 @@
       "sector": "Communication Services",
       "target": 0.15,
       "driver": "Generative AI Search & YouTube Ads",
-      "shares": 0,
-      "entry": null,
-      "last": 356.13,
-      "prev_close": 333.66
+      "shares": 4.104585,
+      "entry": 365.445,
+      "last": 373.51,
+      "prev_close": 356.13
     },
     {
       "ticker": "JPM",
@@ -50,7 +50,7 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 352.81,
+      "last": 352.64,
       "prev_close": 351.79
     },
     {
@@ -59,10 +59,10 @@
       "sector": "Industrials",
       "target": 0.1,
       "driver": "Global Infrastructure & Manufacturing Reshoring",
-      "shares": 0,
-      "entry": null,
-      "last": 814.81,
-      "prev_close": 809.14
+      "shares": 1.232164,
+      "entry": 811.58,
+      "last": 830.03,
+      "prev_close": 814.81
     },
     {
       "ticker": "NEE",
@@ -72,7 +72,7 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 86.375,
+      "last": 86.55,
       "prev_close": 86.92
     },
     {
@@ -81,10 +81,10 @@
       "sector": "Energy",
       "target": 0.1,
       "driver": "Low-cost Production & Carbon Capture Tech",
-      "shares": 0,
-      "entry": null,
-      "last": 155.44,
-      "prev_close": 156.97
+      "shares": 6.516568,
+      "entry": 153.455,
+      "last": 155.06,
+      "prev_close": 155.44
     },
     {
       "ticker": "LIN",
@@ -94,7 +94,7 @@
       "driver": "Industrial Gas for Semiconductor & Hydrogen",
       "shares": 1.035042,
       "entry": 483.072,
-      "last": 481.52,
+      "last": 480.46,
       "prev_close": 478.38
     },
     {
@@ -103,10 +103,10 @@
       "sector": "Healthcare",
       "target": 0.05,
       "driver": "New Drug Pipelines & MedTech Robotics",
-      "shares": 0,
-      "entry": null,
-      "last": 256.35,
-      "prev_close": 255.82
+      "shares": 1.961015,
+      "entry": 254.97,
+      "last": 254.41,
+      "prev_close": 256.35
     },
     {
       "ticker": "PG",
@@ -116,15 +116,20 @@
       "driver": "Strong Pricing Power & Dividend Reinvestment",
       "shares": 3.42818,
       "entry": 145.85,
-      "last": 144.78,
+      "last": 144.97,
       "prev_close": 144.49
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "date": "2026-08-03",
+      "value": 10121.23
+    }
+  ],
   "log": [
     {
       "date": "2026-08-03",
-      "note": "Price fetch failed for: MSFT, AMZN, GOOGL, JPM, CAT, NEE, XOM, LIN, JNJ, PG (stale values kept)."
+      "note": "Opened 10 positions at the 2026-08-03 market open. Total cost $10,000.00, residual cash $0.00."
     }
   ]
 }
