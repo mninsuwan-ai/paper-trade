@@ -6,6 +6,8 @@ publishes a dashboard to GitHub Pages. **No real money, no broker, no orders. No
 - **Start capital:** $10,000 USD
 - **Entry:** official regular-session open price of **2026-08-03**
 - **Rules:** fractional shares, zero commission, no rebalancing, dividends not reinvested
+- **Benchmark:** the same $10,000 put into **SPY** on the same day, tracked side by side
+  (SPY rather than `^GSPC` because Alpha Vantage's free tier does not serve index symbols)
 
 | Ticker | Company | Sector | Target |
 |---|---|---|---|

@@ -36,6 +36,24 @@ for p in pos:
 hist = d.get("history", [])
 winners = sorted([p for p in pos if p["_cost"]], key=lambda x: -x["_plpct"])
 
+# --- benchmark ---------------------------------------------------------------
+bm = d.get("benchmark") or {}
+bm_live = bool(bm.get("entry") and bm.get("last"))
+bm_total = (bm["last"] * bm["shares"]) if bm_live else None
+bm_pl = (bm_total - start) if bm_live else None
+bm_plpct = (bm_pl / start * 100) if bm_live else None
+alpha = (plpct - bm_plpct) if bm_live else None
+bm_day = None
+if bm_live and bm.get("prev_close"):
+    bm_day = (bm["last"] - bm["prev_close"]) / bm["prev_close"] * 100
+
+# Portfolio's own one-day move: value now vs value at yesterday's closes.
+port_day = None
+if live and all(p.get("prev_close") for p in pos):
+    prev_total = sum(p["prev_close"] * float(p["shares"] or 0) for p in pos) + cash
+    if prev_total:
+        port_day = (total - prev_total) / prev_total * 100
+
 PAL = ["#4f8ff7", "#f7a34f", "#5ecb9e", "#e26d8a", "#a98bf0",
        "#4fc7d8", "#f2d05a", "#8fb84f", "#ef7b5c", "#9aa4b2"]
 
@@ -103,19 +121,60 @@ banner = "" if live else (
     '<div class="banner">Orders staged &mdash; not yet filled. Entry price will be the official '
     f'<b>market open on {d["entry_date"]}</b> (09:30 ET). The dashboard fills in automatically after the bell.</div>')
 
-hist_json = json.dumps([{"d": h["date"], "v": round(h["value"], 2)} for h in hist])
+hist_json = json.dumps([{"d": h["date"], "v": round(h["value"], 2),
+                         "b": (round(h["bench"], 2) if h.get("bench") else None)}
+                        for h in hist])
+has_bench_series = sum(1 for h in hist if h.get("bench")) >= 2
+
 chart = ""
 if len(hist) >= 2:
-    chart = """<div class="card"><h2>Equity curve</h2><canvas id="eq" height="90"></canvas></div>
+    chart = """<div class="card">
+<h2>Portfolio vs S&amp;P 500</h2>
+<div class="legend">
+  <span><i style="background:#4f8ff7"></i>This portfolio</span>
+  <span><i style="background:#f7a34f"></i>S&amp;P 500 (SPY)</span>
+  <span class="note">both starting from $10,000 on the same day</span>
+</div>
+<canvas id="eq" height="90"></canvas></div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
 const H = %s;
+const ds = [{label:'Portfolio',data:H.map(x=>x.v),borderColor:'#4f8ff7',
+  backgroundColor:'rgba(79,143,247,.13)',fill:true,tension:.25,pointRadius:2,borderWidth:2}];
+if (%s) ds.push({label:'S&P 500',data:H.map(x=>x.b),borderColor:'#f7a34f',
+  backgroundColor:'transparent',fill:false,tension:.25,pointRadius:2,borderWidth:2,
+  borderDash:[5,4],spanGaps:true});
 new Chart(document.getElementById('eq'), {type:'line',
- data:{labels:H.map(x=>x.d),datasets:[{data:H.map(x=>x.v),borderColor:'#4f8ff7',
-  backgroundColor:'rgba(79,143,247,.13)',fill:true,tension:.25,pointRadius:2,borderWidth:2}]},
- options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString()}}},
+ data:{labels:H.map(x=>x.d),datasets:ds},
+ options:{plugins:{legend:{display:false},
+   tooltip:{callbacks:{label:c=>c.dataset.label+': $'+c.parsed.y.toLocaleString(
+     undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}}},
+  interaction:{mode:'index',intersect:false},
+  scales:{y:{ticks:{callback:v=>'$'+v.toLocaleString()}}},
   responsive:true,maintainAspectRatio:false}});
-</script>""" % hist_json
+</script>""" % (hist_json, "true" if has_bench_series else "false")
+
+# Head-to-head card, shown as soon as the benchmark has an entry price.
+vs = ""
+if live and bm_live:
+    def _cell(v, dp=2, pct=False):
+        return f'<span class="{cls(v)}">{signed(v, dp, pct)}</span>'
+    vs = f"""<div class="card"><h2>Head to head</h2>
+<table class="vs"><thead><tr><th></th><th class="n">Value</th><th class="n">P/L</th>
+<th class="n">Return</th><th class="n">Today</th></tr></thead><tbody>
+<tr><td><span class="dot" style="background:#4f8ff7"></span><b>This portfolio</b></td>
+    <td class="n">{money(total)}</td><td class="n">{_cell(pl)}</td>
+    <td class="n">{_cell(plpct,2,True)}</td>
+    <td class="n">{_cell(port_day,2,True) if port_day is not None else '&mdash;'}</td></tr>
+<tr><td><span class="dot" style="background:#f7a34f"></span><b>S&amp;P 500</b>
+    <div class="sub">{bm.get('shares',0):.4f} SPY @ {money(bm['entry'])}</div></td>
+    <td class="n">{money(bm_total)}</td><td class="n">{_cell(bm_pl)}</td>
+    <td class="n">{_cell(bm_plpct,2,True)}</td>
+    <td class="n">{_cell(bm_day,2,True) if bm_day is not None else '&mdash;'}</td></tr>
+</tbody></table>
+<div class="alpha {cls(alpha)}">{signed(alpha,2)} pts {'ahead of' if alpha >= 0 else 'behind'} the S&amp;P 500
+<span class="sub">&nbsp;&middot;&nbsp; {money(abs(pl - bm_pl))} difference on $10,000</span></div>
+</div>"""
 
 updated = d.get("last_updated") or datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
 
@@ -155,6 +214,13 @@ tr:last-child td{{border-bottom:none}}
 .sec{{font-size:13px}}
 .dot{{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}}
 .up{{color:var(--up)}} .down{{color:var(--down)}} .flat,.pend{{color:var(--mut)}}
+.kpi.hl{{border-color:rgba(79,143,247,.45);background:linear-gradient(180deg,rgba(79,143,247,.09),var(--card))}}
+.legend{{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:-4px 0 14px;font-size:13px}}
+.legend i{{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}}
+.legend .note{{color:var(--mut);font-size:12px}}
+table.vs td{{padding:12px}}
+.alpha{{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:16px;font-weight:600}}
+.alpha .sub{{display:inline;font-weight:400}}
 .movers{{display:grid;grid-template-columns:1fr 1fr;gap:22px}}
 .movers h3{{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px}}
 .movers ul{{list-style:none;margin:0;padding:0}}
@@ -174,7 +240,9 @@ canvas{{max-height:220px}}
   <div class="kpi"><div class="l">Total value</div><div class="v">{money(total)}</div></div>
   <div class="kpi"><div class="l">Total P/L</div><div class="v {cls(pl)}">{signed(pl)}</div></div>
   <div class="kpi"><div class="l">Return</div><div class="v {cls(pl)}">{signed(plpct,2,True)}</div></div>
-  <div class="kpi"><div class="l">Invested / Cash</div><div class="v">{money(mv,0)} <span style="font-size:15px;color:var(--mut)">/ {money(cash,2)}</span></div></div>
+  <div class="kpi{' hl' if bm_live else ''}"><div class="l">vs S&amp;P 500</div>
+    <div class="v {cls(alpha) if bm_live else 'flat'}">{signed(alpha,2) + ' pts' if bm_live else '&mdash;'}</div>
+    <div class="sub">{('S&amp;P ' + signed(bm_plpct,2,True)) if bm_live else 'benchmark pending'}</div></div>
 </div>
 
 <div class="card"><h2>Allocation</h2><div class="bar">{alloc_bar}</div></div>
@@ -187,9 +255,11 @@ canvas{{max-height:220px}}
 {''.join(rows)}
 </tbody></table></div>
 
-{('<div class="card"><h2>Movers</h2>' + movers + '</div>') if movers else ''}
+{vs}
 
 {chart}
+
+{('<div class="card"><h2>Movers</h2>' + movers + '</div>') if movers else ''}
 
 <div class="card"><h2>Activity log</h2>
 <table><thead><tr><th style="width:130px">Date</th><th>Event</th></tr></thead>

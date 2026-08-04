@@ -224,6 +224,12 @@ def main():
     start = float(d["start_cash"])
     need_entry = d.get("status") != "open"
 
+    # Benchmark: the same $10,000 put into SPY on the same day. SPY is used rather than
+    # ^GSPC because the index symbol is not available on Alpha Vantage's free tier.
+    bench = d.setdefault("benchmark", {
+        "ticker": "SPY", "name": "S&P 500 (SPY ETF)",
+        "entry": None, "shares": 0, "last": None, "prev_close": None})
+
     log(f"Alpha Vantage key: {'present' if AV_KEY else 'NOT set'}")
     log(f"Mode: {'INITIAL BUY (entry ' + entry_date + ')' if need_entry else 'daily mark-to-market'}\n")
 
@@ -260,6 +266,26 @@ def main():
                 notes.append(f"{tk} entry taken from {bar['date']}")
         log(f"  {tk:<6} {src:<13} entry={p['entry']} last={p['last']} ({last_bar['date']})")
 
+    # --- benchmark ------------------------------------------------------------
+    # A benchmark problem must never block the portfolio itself, so its failures are
+    # reported but kept out of `failures`.
+    bench_bars, bench_src, bench_problems = series(bench["ticker"])
+    if bench_bars:
+        bench["last"] = round(bench_bars[-1]["close"], 4)
+        bench["prev_close"] = round(bench_bars[-2]["close"], 4) if len(bench_bars) > 1 else None
+        if not bench.get("entry"):
+            bar = next((r for r in bench_bars if r["date"] == entry_date), None) \
+                or next((r for r in bench_bars if r["date"] >= entry_date), None)
+            if bar:
+                bench["entry"] = round(bar["open"], 4)
+                bench["shares"] = round(start / bench["entry"], 6)
+        log(f"  {bench['ticker']:<6} {bench_src:<13} entry={bench['entry']} "
+            f"last={bench['last']} ({bench_bars[-1]['date']})  [benchmark]")
+    else:
+        log(f"  {bench['ticker']:<6} benchmark fetch failed - keeping previous values")
+        for pr in bench_problems:
+            log(f"           {pr}")
+
     blocked = failures + waiting
 
     if not failures:
@@ -282,7 +308,8 @@ def main():
                     + (" " + "; ".join(notes) if notes else "")})
         d.setdefault("history", [])
         if not any(h["date"] == entry_date for h in d["history"]):
-            d["history"].append({"date": entry_date, "value": round(start, 2)})
+            d["history"].append({"date": entry_date, "value": round(start, 2),
+                                 "bench": round(start, 2)})
         log(f"\n  -> BUY executed. cost={cost:,.2f} cash={d['cash']:,.2f}")
     elif need_entry:
         reason = []
@@ -295,17 +322,27 @@ def main():
     if d.get("status") == "open" and latest_date:
         total = sum((p["last"] or p["entry"] or 0) * (p["shares"] or 0)
                     for p in positions) + float(d.get("cash") or 0)
+        bench_total = None
+        if bench.get("entry") and bench.get("last"):
+            bench_total = round(bench["last"] * bench["shares"], 2)
+
         hist = d.setdefault("history", [])
-        for h in hist:
-            if h["date"] == latest_date:
-                h["value"] = round(total, 2)
-                break
-        else:
-            hist.append({"date": latest_date, "value": round(total, 2)})
+        row = next((h for h in hist if h["date"] == latest_date), None)
+        if row is None:
+            row = {"date": latest_date}
+            hist.append(row)
+        row["value"] = round(total, 2)
+        if bench_total is not None:
+            row["bench"] = bench_total
         hist.sort(key=lambda h: h["date"])
+
         d["last_price_date"] = latest_date
         pl = total - start
         log(f"  -> total={total:,.2f}  P/L={pl:+,.2f} ({pl / start * 100:+.2f}%)")
+        if bench_total is not None:
+            bpl = bench_total - start
+            log(f"  -> S&P 500 {bench_total:,.2f}  ({bpl / start * 100:+.2f}%)   "
+                f"alpha {(pl - bpl) / start * 100:+.2f} pts")
 
     if failures:
         d.setdefault("log", []).append({
