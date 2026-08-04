@@ -34,6 +34,13 @@ tr:last-child td{border-bottom:none}
 .sec{font-size:13px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
 .up{color:var(--up)} .down{color:var(--down)} .flat,.pend{color:var(--mut)}
+.kpi.hl{border-color:rgba(79,143,247,.45);background:linear-gradient(180deg,rgba(79,143,247,.09),var(--card))}
+.legend{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:-4px 0 14px;font-size:13px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.legend .note{color:var(--mut);font-size:12px}
+table.vs td{padding:12px}
+.alpha{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:16px;font-weight:600}
+.alpha .sub{display:inline;font-weight:400}
 .movers{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .movers h3{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px}
 .movers ul{list-style:none;margin:0;padding:0}
@@ -45,7 +52,7 @@ canvas{max-height:220px}
 </style></head><body><div class="wrap">
 
 <h1>Paper Trade &mdash; $10,000 Sector Core Portfolio</h1>
-<div class="meta">Entry basis: Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET) &nbsp;&middot;&nbsp; Prices as of 2026-08-03 &nbsp;&middot;&nbsp; Built 2026-08-04 01:39 UTC</div>
+<div class="meta">Entry basis: Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET) &nbsp;&middot;&nbsp; Prices as of 2026-08-03 &nbsp;&middot;&nbsp; Built 2026-08-04 02:09 UTC</div>
 
 
 
@@ -53,7 +60,9 @@ canvas{max-height:220px}
   <div class="kpi"><div class="l">Total value</div><div class="v">$10,121.23</div></div>
   <div class="kpi"><div class="l">Total P/L</div><div class="v up">+121.23</div></div>
   <div class="kpi"><div class="l">Return</div><div class="v up">+1.21%</div></div>
-  <div class="kpi"><div class="l">Invested / Cash</div><div class="v">$10,121 <span style="font-size:15px;color:var(--mut)">/ $0.00</span></div></div>
+  <div class="kpi hl"><div class="l">vs S&amp;P 500</div>
+    <div class="v up">+0.11 pts</div>
+    <div class="sub">S&amp;P +1.10%</div></div>
 </div>
 
 <div class="card"><h2>Allocation</h2><div class="bar"><div class="seg" style="width:15.1791%;background:#4f8ff7" title="MSFT"></div><div class="seg" style="width:15.1255%;background:#f7a34f" title="AMZN"></div><div class="seg" style="width:15.1474%;background:#5ecb9e" title="GOOGL"></div><div class="seg" style="width:9.8492%;background:#e26d8a" title="JPM"></div><div class="seg" style="width:10.1048%;background:#a98bf0" title="CAT"></div><div class="seg" style="width:9.8574%;background:#4fc7d8" title="NEE"></div><div class="seg" style="width:9.9836%;background:#f2d05a" title="XOM"></div><div class="seg" style="width:4.9134%;background:#8fb84f" title="LIN"></div><div class="seg" style="width:4.9293%;background:#ef7b5c" title="JNJ"></div><div class="seg" style="width:4.9103%;background:#9aa4b2" title="PG"></div></div></div>
@@ -156,9 +165,26 @@ canvas{max-height:220px}
 </tr>
 </tbody></table></div>
 
+<div class="card"><h2>Head to head</h2>
+<table class="vs"><thead><tr><th></th><th class="n">Value</th><th class="n">P/L</th>
+<th class="n">Return</th><th class="n">Today</th></tr></thead><tbody>
+<tr><td><span class="dot" style="background:#4f8ff7"></span><b>This portfolio</b></td>
+    <td class="n">$10,121.23</td><td class="n"><span class="up">+121.23</span></td>
+    <td class="n"><span class="up">+1.21%</span></td>
+    <td class="n"><span class="up">+2.27%</span></td></tr>
+<tr><td><span class="dot" style="background:#f7a34f"></span><b>S&amp;P 500</b>
+    <div class="sub">13.3433 SPY @ $749.44</div></td>
+    <td class="n">$10,109.82</td><td class="n"><span class="up">+109.82</span></td>
+    <td class="n"><span class="up">+1.10%</span></td>
+    <td class="n"><span class="up">+1.42%</span></td></tr>
+</tbody></table>
+<div class="alpha up">+0.11 pts ahead of the S&amp;P 500
+<span class="sub">&nbsp;&middot;&nbsp; $11.41 difference on $10,000</span></div>
+</div>
+
+
+
 <div class="card"><h2>Movers</h2><div class="movers"><div><h3>Top 3</h3><ul><li><b>MSFT</b><span class="up">+2.42%</span></li><li><b>CAT</b><span class="up">+2.27%</span></li><li><b>GOOGL</b><span class="up">+2.21%</span></li></ul></div><div><h3>Bottom 3</h3><ul><li><b>PG</b><span class="down">−0.60%</span></li><li><b>LIN</b><span class="down">−0.54%</span></li><li><b>JPM</b><span class="down">−0.31%</span></li></ul></div></div></div>
-
-
 
 <div class="card"><h2>Activity log</h2>
 <table><thead><tr><th style="width:130px">Date</th><th>Event</th></tr></thead>

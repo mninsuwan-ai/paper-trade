@@ -6,7 +6,7 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-08-04 01:39 UTC",
+  "last_updated": "2026-08-04 02:09 UTC",
   "last_price_date": "2026-08-03",
   "positions": [
     {
@@ -123,7 +123,8 @@
   "history": [
     {
       "date": "2026-08-03",
-      "value": 10121.23
+      "value": 10121.23,
+      "bench": 10109.82
     }
   ],
   "log": [
@@ -131,5 +132,13 @@
       "date": "2026-08-03",
       "note": "Opened 10 positions at the 2026-08-03 market open. Total cost $10,000.00, residual cash $0.00."
     }
-  ]
+  ],
+  "benchmark": {
+    "ticker": "SPY",
+    "name": "S&P 500 (SPY ETF)",
+    "entry": 749.44,
+    "shares": 13.343296,
+    "last": 757.67,
+    "prev_close": 747.03
+  }
 }
