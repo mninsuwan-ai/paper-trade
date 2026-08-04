@@ -29,9 +29,9 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -53,13 +53,34 @@ jobs:
         run: |
           git config user.name  "paper-trade-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           if git diff --quiet -- portfolio.json index.html; then
             echo "No changes to commit."
-          else
-            git add portfolio.json index.html
-            git commit -m "chore: update portfolio $(date -u +'%Y-%m-%d')"
-            git push
+            exit 0
           fi
+
+          git add portfolio.json index.html
+          git commit -m "chore: update portfolio $(date -u +'%Y-%m-%d')"
+
+          # The runner may have checked out a commit that is no longer the tip of main
+          # (a manual push landing while the job was queued). Rebase onto whatever is
+          # there now and retry rather than failing the whole run on a rejected push.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push rejected, rebasing onto origin/main (attempt $attempt)..."
+            git fetch origin main
+            # Our commit only touches generated files, so on a conflict ours always wins.
+            git rebase -X ours origin/main || {
+              git rebase --abort || true
+              echo "Rebase failed."
+              exit 1
+            }
+          done
+          echo "Could not push after 3 attempts."
+          exit 1
 
       - name: Summary
         run: |
