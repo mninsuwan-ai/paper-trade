@@ -24,6 +24,7 @@ import http.cookiejar
 import glob
 import io
 import json
+import math
 import os
 import sys
 import time
@@ -258,6 +259,40 @@ def probe():
     return 0
 
 
+def logrets(bars):
+    """{date: log return} from a list of daily bars."""
+    out = {}
+    for a, b in zip(bars, bars[1:]):
+        if a["close"] > 0 and b["close"] > 0:
+            out[b["date"]] = math.log(b["close"] / a["close"])
+    return out
+
+
+def risk_stats(stock_bars, mkt_rets):
+    """One-factor risk estimate: (beta, annualised residual vol, annualised vol).
+
+    Regresses the stock's daily log returns on the benchmark's. Returns None when
+    there is not enough overlap to say anything meaningful.
+    """
+    r = logrets(stock_bars)
+    dates = sorted(set(r) & set(mkt_rets))
+    n = len(dates)
+    if n < 60:
+        return None
+    x = [mkt_rets[t] for t in dates]
+    y = [r[t] for t in dates]
+    mx, my = sum(x) / n, sum(y) / n
+    vx = sum((a - mx) ** 2 for a in x) / (n - 1)
+    if vx <= 0:
+        return None
+    cov = sum((a - mx) * (b - my) for a, b in zip(x, y)) / (n - 1)
+    beta = cov / vx
+    resid = [b - my - beta * (a - mx) for a, b in zip(x, y)]
+    rv = math.sqrt(sum(e * e for e in resid) / (n - 2)) * math.sqrt(252)
+    tv = math.sqrt(sum((b - my) ** 2 for b in y) / (n - 1)) * math.sqrt(252)
+    return round(beta, 4), round(rv, 4), round(tv, 4)
+
+
 def run_one(path):
     """Update a single portfolio file. Returns True if it was fully priced."""
     d = json.load(open(path, encoding="utf-8"))
@@ -281,6 +316,17 @@ def run_one(path):
     failures, waiting, notes = [], [], []
     latest_date = None
 
+    # Benchmark bars are pulled up front (the cache makes this free) so that every
+    # holding can be regressed against the same market series for the projection.
+    bench_bars, bench_src, bench_problems, bench_hit = series(bench["ticker"])
+    mkt_rets = logrets(bench_bars) if bench_bars else {}
+    if bench_bars and len(mkt_rets) >= 60:
+        vals = list(mkt_rets.values())
+        mu = sum(vals) / len(vals)
+        bench["vol"] = round(math.sqrt(sum((v - mu) ** 2 for v in vals)
+                                       / (len(vals) - 1)) * math.sqrt(252), 4)
+        bench["stat_days"] = len(vals)
+
     for p in positions:
         tk = p["ticker"]
         bars, src, problems, hit = series(tk)
@@ -295,6 +341,10 @@ def run_one(path):
         p["last"] = round(last_bar["close"], 4)
         p["prev_close"] = round(bars[-2]["close"], 4) if len(bars) > 1 else None
         latest_date = max(latest_date or last_bar["date"], last_bar["date"])
+
+        st = risk_stats(bars, mkt_rets) if mkt_rets else None
+        if st:
+            p["beta"], p["resid_vol"], p["vol"] = st
 
         if need_entry:
             bar = next((r for r in bars if r["date"] == entry_date), None) \

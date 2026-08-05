@@ -73,6 +73,16 @@ tr:last-child td{border-bottom:none}
 .legend .note{color:var(--mut);font-size:12px}
 .alpha{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:16px;font-weight:600}
 .alpha .sub{display:inline;font-weight:400}
+.mcctl{display:flex;flex-wrap:wrap;gap:22px;align-items:center;margin:-2px 0 16px;font-size:13px}
+.mcctl label{display:flex;flex-direction:column;gap:5px;color:var(--mut)}
+.mcctl label b{color:var(--tx)}
+.mcctl input[type=range]{width:190px;accent-color:var(--acc)}
+.mcctl .note{color:var(--mut);font-size:12px;max-width:340px;line-height:1.5}
+.mcout{margin-top:16px}
+.mcout table{font-size:14px}
+.mcout td,.mcout th{padding:9px 12px}
+.mcnote{color:var(--mut);font-size:12px;line-height:1.65;margin-top:14px;
+padding-top:13px;border-top:1px solid var(--line)}
 .movers{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .movers h3{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px}
 .movers ul{list-style:none;margin:0;padding:0}
@@ -199,6 +209,146 @@ def holdings_table(c):
 </tr></thead><tbody>{''.join(rows)}</tbody></table></div>"""
 
 
+def montecarlo(d, c):
+    """A one-factor forward simulation, run in the browser so the assumptions are live.
+
+    Each holding is modelled as  r_i = beta_i * market + idiosyncratic noise, with beta and
+    residual volatility measured from the trailing daily bars. Expected returns come from
+    CAPM off a market-return assumption the reader sets -- deliberately NOT from each
+    stock's own trailing return, because extrapolating a holding that has tripled would
+    manufacture a forecast rather than describe risk.
+    """
+    ok = [p for p in c["pos"] if p.get("beta") is not None
+          and p.get("resid_vol") is not None and p.get("last")]
+    mvol = (d.get("benchmark") or {}).get("vol")
+    if not c["live"] or not mvol or not ok or len(ok) < len(c["pos"]):
+        return ""
+
+    tot = sum(p["_mv"] for p in ok)
+    tpl = TPL_MC
+    for k, v in {
+        "@@ASSETS@@": json.dumps([{"t": p["ticker"], "v": round(p["_mv"], 2),
+                                   "b": p["beta"], "r": p["resid_vol"]} for p in ok]),
+        "@@MVOL@@": f"{mvol:.4f}",
+        "@@PATHS@@": "4000",
+        "@@BETA@@": f"{sum(p['beta'] * p['_mv'] for p in ok) / tot:.2f}",
+        "@@VOL@@": f"{sum(p.get('vol', 0) * p['_mv'] for p in ok) / tot * 100:.0f}",
+        "@@DAYS@@": str((d.get("benchmark") or {}).get("stat_days", 0)),
+    }.items():
+        tpl = tpl.replace(k, v)
+    return tpl
+
+
+TPL_MC = """<div class="card"><h2>Projection &mdash; Monte Carlo</h2>
+<div class="mcctl">
+  <label>Horizon <b><span id="mcY">8</span> yr</b>
+    <input type="range" id="mcYr" min="1" max="15" step="1" value="8"></label>
+  <label>Assumed market return <b><span id="mcM">8.0</span>%/yr</b>
+    <input type="range" id="mcMk" min="0" max="14" step="0.5" value="8"></label>
+  <span class="note">@@PATHS@@ paths &middot; portfolio beta @@BETA@@ &middot;
+  weighted volatility @@VOL@@%/yr &middot; estimated from @@DAYS@@ trading days</span>
+</div>
+<canvas id="mc" height="95"></canvas>
+<div id="mcOut" class="mcout"></div>
+<div class="mcnote">Holdings are simulated as <i>beta &times; market + own noise</i>, with no
+rebalancing. Each stock's expected return follows CAPM from the slider above, so
+<b>no stock-picking skill is assumed</b> &mdash; the spread below is volatility, not a forecast
+about these particular companies. A real multi-year path also brings takeovers, dilution,
+regime changes and outright business failure, none of which a lognormal model captures.
+Read the fan as a rough sense of scale, nothing more.</div>
+</div>
+<script>
+(function(){
+const A = @@ASSETS@@, MV = @@MVOL@@, RF = 0.04, PATHS = @@PATHS@@;
+const V0 = A.reduce(function(s,a){return s+a.v;},0);
+let sp = null;
+function nrm(){
+  let u=0,v=0;
+  while(u===0) u=Math.random();
+  while(v===0) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function pct(sorted,q){
+  const i=(sorted.length-1)*q, lo=Math.floor(i), hi=Math.ceil(i);
+  return lo===hi ? sorted[lo] : sorted[lo]+(sorted[hi]-sorted[lo])*(i-lo);
+}
+function run(years, mu){
+  const drift=[], bs=[], rs=[];
+  for(const a of A){
+    const sig2 = Math.pow(a.b*MV,2) + a.r*a.r;
+    const er   = RF + a.b*(mu-RF);
+    drift.push(Math.log(1+er) - 0.5*sig2);
+    bs.push(a.b*MV);
+    rs.push(a.r);
+  }
+  const byYear = Array.from({length:years}, function(){return [];});
+  for(let p=0;p<PATHS;p++){
+    const cur = A.map(function(a){return a.v;});
+    for(let y=0;y<years;y++){
+      const zm = nrm();
+      let tot = 0;
+      for(let i=0;i<A.length;i++){
+        cur[i] *= Math.exp(drift[i] + bs[i]*zm + rs[i]*nrm());
+        tot += cur[i];
+      }
+      byYear[y].push(tot);
+    }
+  }
+  byYear.forEach(function(a){a.sort(function(x,y){return x-y;});});
+  return byYear;
+}
+const fmt = function(v){return '$'+Math.round(v).toLocaleString();};
+function draw(){
+  const years = +document.getElementById('mcYr').value;
+  const mu = +document.getElementById('mcMk').value/100;
+  document.getElementById('mcY').textContent = years;
+  document.getElementById('mcM').textContent = (mu*100).toFixed(1);
+  const by = run(years, mu);
+  const labels = ['now'].concat(Array.from({length:years}, function(_,i){return 'y'+(i+1);}));
+  const q = function(k){return [V0].concat(by.map(function(a){return pct(a,k);}));};
+  const band = function(data,col,fill,dash){
+    return {data:data,borderColor:col,backgroundColor:fill||'transparent',
+            fill:fill?'-1':false,borderWidth:fill?1:2,pointRadius:0,
+            tension:.2,borderDash:dash||[]};
+  };
+  const ds=[band(q(0.10),'rgba(79,143,247,.35)',null,[4,3]),
+            band(q(0.25),'rgba(79,143,247,.5)','rgba(79,143,247,.10)'),
+            band(q(0.50),'#4f8ff7',null),
+            band(q(0.75),'rgba(79,143,247,.5)','rgba(79,143,247,.10)'),
+            band(q(0.90),'rgba(79,143,247,.35)',null,[4,3])];
+  if(sp) sp.destroy();
+  sp = new Chart(document.getElementById('mc'), {type:'line',
+    data:{labels:labels,datasets:ds},
+    options:{plugins:{legend:{display:false},
+      tooltip:{mode:'index',intersect:false,callbacks:{
+        title:function(c){return c[0].label;},
+        label:function(c){return ['10th','25th','median','75th','90th'][c.datasetIndex]
+          +': '+fmt(c.parsed.y);}}}},
+      scales:{y:{ticks:{callback:function(v){return '$'+(v/1000).toFixed(0)+'k';}}}},
+      responsive:true,maintainAspectRatio:false}});
+  const f = by[years-1];
+  const loss = f.filter(function(v){return v<V0;}).length/f.length*100;
+  const cagr = function(v){return ((Math.pow(v/V0,1/years)-1)*100).toFixed(1)+'%/yr';};
+  const rows=[['Bad case (10th pct)',pct(f,.10)],['25th percentile',pct(f,.25)],
+              ['Median',pct(f,.50)],['75th percentile',pct(f,.75)],
+              ['Good case (90th pct)',pct(f,.90)]];
+  document.getElementById('mcOut').innerHTML =
+    '<table><thead><tr><th>Outcome</th><th class="n">Value after '+years+' yr</th>'
+    +'<th class="n">Multiple</th><th class="n">Implied CAGR</th></tr></thead><tbody>'
+    + rows.map(function(r){
+        return '<tr><td>'+r[0]+'</td><td class="n">'+fmt(r[1])+'</td><td class="n">'
+             +(r[1]/V0).toFixed(2)+'x</td><td class="n">'+cagr(r[1])+'</td></tr>';
+      }).join('')
+    + '</tbody></table><div class="alpha flat">Chance of ending below today&rsquo;s '
+    + fmt(V0)+': <b>'+loss.toFixed(0)+'%</b></div>';
+}
+document.getElementById('mcYr').addEventListener('input', draw);
+document.getElementById('mcMk').addEventListener('input', draw);
+draw();
+})();
+</script>"""
+
+
 def render_portfolio(d, portfolios):
     c = compute(d)
     pos, live = c["pos"], c["live"]
@@ -249,6 +399,8 @@ def render_portfolio(d, portfolios):
 <div class="alpha {cls(a)}">{signed(a,2)} pts {'ahead of' if a >= 0 else 'behind'} the S&amp;P 500
 <span class="sub">&nbsp;&middot;&nbsp; {money(abs(pv - bv))} difference</span></div></div>"""
 
+    mc = montecarlo(d, c)
+
     hist = d.get("history", [])
     chart = ""
     if len(hist) >= 2:
@@ -260,7 +412,6 @@ def render_portfolio(d, portfolios):
 <span><i style="background:#f7a34f"></i>S&amp;P 500 (SPY)</span>
 <span class="note">both starting from the same amount on %s</span></div>
 <canvas id="eq" height="90"></canvas></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
 const H = %s;
 const ds=[{label:'%s',data:H.map(x=>x.v),borderColor:'#4f8ff7',
@@ -304,11 +455,14 @@ new Chart(document.getElementById('eq'),{type:'line',data:{labels:H.map(x=>x.d),
 {holdings_table(c)}
 {vs}
 {chart}
+{mc}
 {movers}
 <div class="card"><h2>Activity log</h2>
 <table><thead><tr><th style="width:130px">Date</th><th>Event</th></tr></thead>
 <tbody>{logrows}</tbody></table></div>"""
-    return page(f"{d['name']} &mdash; Paper Trade", body), c
+    head = ('<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>'
+            if (chart or mc) else "")
+    return page(f"{d['name']} &mdash; Paper Trade", body, head), c
 
 
 def render_index(cards, portfolios):
