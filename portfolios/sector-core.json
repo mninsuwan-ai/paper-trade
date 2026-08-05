@@ -6,7 +6,7 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-08-05 01:48 UTC",
+  "last_updated": "2026-08-05 06:35 UTC",
   "last_price_date": "2026-08-04",
   "positions": [
     {
@@ -145,5 +145,10 @@
     "shares": 13.343296,
     "last": 771.33,
     "prev_close": 757.67
-  }
+  },
+  "name": "Sector Core",
+  "slug": "sector-core",
+  "subtitle": "One large-cap leader per GICS sector, $10,000 at the open",
+  "track_since": "2026-08-03",
+  "track_base": 10000.0
 }
