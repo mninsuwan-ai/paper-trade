@@ -78,6 +78,10 @@ tr:last-child td{border-bottom:none}
 .mcctl label b{color:var(--tx)}
 .mcctl input[type=range]{width:190px;accent-color:var(--acc)}
 .mcctl .note{color:var(--mut);font-size:12px;max-width:340px;line-height:1.5}
+.presets{display:flex;gap:7px;flex-wrap:wrap;align-self:flex-end}
+.presets button{background:var(--bg);border:1px solid var(--line);color:var(--tx);
+border-radius:99px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit}
+.presets button:hover{border-color:var(--acc);color:var(--acc)}
 .mcout{margin-top:16px}
 .mcout table{font-size:14px}
 .mcout td,.mcout th{padding:9px 12px}
@@ -349,6 +353,113 @@ draw();
 </script>"""
 
 
+def stresstest(d, c):
+    """What a market-wide drawdown would do to this portfolio, via each holding's beta."""
+    ok = [p for p in c["pos"] if p.get("beta") is not None
+          and p.get("resid_vol") is not None and p.get("last")]
+    if not c["live"] or not ok or len(ok) < len(c["pos"]):
+        return ""
+    tpl = TPL_STRESS
+    for k, v in {
+        "@@ASSETS@@": json.dumps([{"t": p["ticker"], "v": round(p["_mv"], 2),
+                                   "b": p["beta"], "r": p["resid_vol"]} for p in ok]),
+    }.items():
+        tpl = tpl.replace(k, v)
+    return tpl
+
+
+TPL_STRESS = """<div class="card"><h2>Stress test &mdash; market drawdown</h2>
+<div class="mcctl">
+  <label>S&amp;P 500 falls <b><span id="stD">30</span>%</b>
+    <input type="range" id="stDd" min="5" max="60" step="1" value="30"></label>
+  <label>Over <b><span id="stM">6</span> months</b>
+    <input type="range" id="stMo" min="1" max="30" step="1" value="6"></label>
+  <div class="presets">
+    <button data-d="34" data-m="1">COVID 2020</button>
+    <button data-d="25" data-m="9">2022 bear</button>
+    <button data-d="57" data-m="17">GFC 2007-09</button>
+    <button data-d="49" data-m="31">Dot-com 2000-02</button>
+  </div>
+</div>
+<div id="stOut"></div>
+<div class="mcnote">Each holding is moved by <i>its beta &times; the market fall</i>, plus its own
+noise scaled to the length of the shock. Two things this cannot capture: in a real crash
+correlations converge toward 1, so diversification helps less than the model suggests; and beta
+is measured on ordinary days, then tends to run higher in a panic. <b>Treat these as an
+optimistic floor, not a worst case.</b> Historical presets are peak-to-trough S&amp;P 500 closes,
+rounded.</div>
+</div>
+<script>
+(function(){
+const A = @@ASSETS@@;
+const V0 = A.reduce(function(s,a){return s+a.v;},0);
+function nrm(){
+  let u=0,v=0;
+  while(u===0) u=Math.random();
+  while(v===0) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+const fmt=function(v){return '$'+Math.round(v).toLocaleString();};
+const sg=function(v){return (v>=0?'+':'\u2212')+Math.abs(v).toFixed(1)+'%';};
+const cl=function(v){return v>0?'up':(v<0?'down':'flat');};
+function draw(){
+  const dd = +document.getElementById('stDd').value/100;
+  const mo = +document.getElementById('stMo').value;
+  document.getElementById('stD').textContent=(dd*100).toFixed(0);
+  document.getElementById('stM').textContent=mo;
+  const Lm = Math.log(1-dd), T = mo/12;
+  let central=0;
+  const rows=A.map(function(a){
+    const mv = a.v*Math.exp(a.b*Lm);
+    central += mv;
+    return {t:a.t, b:a.b, mv:mv, ch:(Math.exp(a.b*Lm)-1)*100, loss:mv-a.v};
+  });
+  const N=4000, out=[];
+  for(let p=0;p<N;p++){
+    let tot=0;
+    for(let i=0;i<A.length;i++)
+      tot += A[i].v*Math.exp(A[i].b*Lm + A[i].r*Math.sqrt(T)*nrm());
+    out.push(tot);
+  }
+  out.sort(function(x,y){return x-y;});
+  const q=function(k){return out[Math.round((out.length-1)*k)];};
+  rows.sort(function(x,y){return x.loss-y.loss;});
+  document.getElementById('stOut').innerHTML =
+    '<div class="kpis" style="margin-bottom:18px">'
+    +'<div class="kpi"><div class="l">Portfolio after the fall</div><div class="v down">'
+      +fmt(central)+'</div><div class="sub">from '+fmt(V0)+'</div></div>'
+    +'<div class="kpi"><div class="l">Portfolio drawdown</div><div class="v down">'
+      +sg((central/V0-1)*100)+'</div><div class="sub">market '+sg(-dd*100)+'</div></div>'
+    +'<div class="kpi"><div class="l">Amount lost</div><div class="v down">'
+      +fmt(V0-central)+'</div></div>'
+    +'<div class="kpi"><div class="l">Likely range</div><div class="v">'
+      +fmt(q(0.10))+' &ndash; '+fmt(q(0.90))+'</div>'
+      +'<div class="sub">10th&ndash;90th pct incl. stock-specific moves</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Ticker</th><th class="n">Beta</th><th class="n">Move</th>'
+    +'<th class="n">Value after</th><th class="n">Loss</th></tr></thead><tbody>'
+    + rows.map(function(r){
+        return '<tr><td><b>'+r.t+'</b></td><td class="n">'+r.b.toFixed(2)+'</td>'
+        +'<td class="n '+cl(r.ch)+'">'+sg(r.ch)+'</td>'
+        +'<td class="n">'+fmt(r.mv)+'</td>'
+        +'<td class="n '+cl(r.loss)+'">'+(r.loss<0?'\u2212':'')+fmt(Math.abs(r.loss)).replace('$','$')+'</td></tr>';
+      }).join('')
+    +'</tbody></table>';
+}
+document.getElementById('stDd').addEventListener('input',draw);
+document.getElementById('stMo').addEventListener('input',draw);
+Array.prototype.forEach.call(document.querySelectorAll('.presets button'),function(b){
+  b.addEventListener('click',function(){
+    document.getElementById('stDd').value=b.dataset.d;
+    document.getElementById('stMo').value=b.dataset.m;
+    draw();
+  });
+});
+draw();
+})();
+</script>"""
+
+
 def render_portfolio(d, portfolios):
     c = compute(d)
     pos, live = c["pos"], c["live"]
@@ -400,6 +511,7 @@ def render_portfolio(d, portfolios):
 <span class="sub">&nbsp;&middot;&nbsp; {money(abs(pv - bv))} difference</span></div></div>"""
 
     mc = montecarlo(d, c)
+    stress = stresstest(d, c)
 
     hist = d.get("history", [])
     chart = ""
@@ -456,6 +568,7 @@ new Chart(document.getElementById('eq'),{type:'line',data:{labels:H.map(x=>x.d),
 {vs}
 {chart}
 {mc}
+{stress}
 {movers}
 <div class="card"><h2>Activity log</h2>
 <table><thead><tr><th style="width:130px">Date</th><th>Event</th></tr></thead>
