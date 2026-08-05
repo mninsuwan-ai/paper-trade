@@ -1,26 +1,27 @@
-# $10,000 Paper Trade — Sector Core Portfolio
+# Paper Trade
 
-A simulated buy-and-hold portfolio that updates itself every weekday on GitHub Actions and
-publishes a dashboard to GitHub Pages. **No real money, no broker, no orders. Not investment advice.**
+Simulated buy-and-hold portfolios that update themselves every weekday on GitHub Actions and
+publish to GitHub Pages. **No real money, no broker, no orders. Not investment advice.**
 
-- **Start capital:** $10,000 USD
-- **Entry:** official regular-session open price of **2026-08-03**
-- **Rules:** fractional shares, zero commission, no rebalancing, dividends not reinvested
-- **Benchmark:** the same $10,000 put into **SPY** on the same day, tracked side by side
-  (SPY rather than `^GSPC` because Alpha Vantage's free tier does not serve index symbols)
+**Common rules:** fractional shares, zero commission, no rebalancing, dividends not reinvested.
+Each portfolio is benchmarked against the same money put into **SPY** from its own `track_since`
+date (SPY rather than `^GSPC` because Alpha Vantage's free tier does not serve index symbols).
 
-| Ticker | Company | Sector | Target |
-|---|---|---|---|
-| MSFT | Microsoft Corp. | Technology | 15% |
-| AMZN | Amazon.com Inc. | Consumer Discretionary | 15% |
-| GOOGL | Alphabet Inc. | Communication Services | 15% |
-| JPM | JPMorgan Chase & Co. | Financials | 10% |
-| CAT | Caterpillar Inc. | Industrials | 10% |
-| NEE | NextEra Energy Inc. | Utilities | 10% |
-| XOM | Exxon Mobil Corp. | Energy | 10% |
-| LIN | Linde plc | Materials | 5% |
-| JNJ | Johnson & Johnson | Healthcare | 5% |
-| PG | Procter & Gamble Co. | Consumer Staples | 5% |
+### Sector Core &mdash; `portfolios/sector-core.json`
+
+$10,000 spread across one large-cap leader per GICS sector, all bought at the
+**2026-08-03 open**. Weights: MSFT / AMZN / GOOGL 15% each, JPM / CAT / NEE / XOM 10% each,
+LIN / JNJ / PG 5% each.
+
+### Tracking trade &mdash; `portfolios/tracking-trade.json`
+
+The 12 largest holdings by market value from the Dime monthly statement of July 2026.
+Share counts and entry prices are taken straight from the statement, so `entry` is the
+reported **average cost per share** rather than a single purchase price. Cost basis
+**$6,867.29** across META, AMZN, DOCN, MELI, AXON, NVDA, MSFT, CRWD, GOOGL, RBRK, AAPL, TSLA.
+
+Because that cost basis was accumulated over many different dates, its benchmark starts on
+**2026-08-05** instead, from whatever the portfolio was worth that day.
 
 ---
 
@@ -71,7 +72,7 @@ Stooq กับ Yahoo มักบล็อก IP ของ GitHub runner (ต�
 2. Repo → **Settings → Secrets and variables → Actions → New repository secret**
 3. Name: `ALPHAVANTAGE_KEY` — Secret: key ที่ได้มา → Add secret
 
-โควต้าฟรี 25 requests/วัน พอร์ตนี้ใช้วันละ 10 — เหลือเฟือ
+โควต้าฟรี 25 requests/วัน ปัจจุบัน 2 พอร์ตใช้ 20 ครั้ง/วัน (หุ้นซ้ำระหว่างพอร์ตดึงครั้งเดียว) — ถ้าจะเพิ่มพอร์ตที่ 3 ต้องระวังโควต้า
 ถ้าไม่ใส่ก็ยังรันได้ สคริปต์จะไปลอง Stooq → Yahoo ต่อ แต่ไม่การันตี
 
 ### 6. รันครั้งแรกเพื่อซื้อ
@@ -79,7 +80,7 @@ Stooq กับ Yahoo มักบล็อก IP ของ GitHub runner (ต�
 Repo → แท็บ **Actions** → *Update paper-trade portfolio* → **Run workflow**.
 
 รอบแรกจะดึงราคา **Open ของ 2026-08-03** มาเป็นราคาเข้าซื้อ คำนวณจำนวนหุ้น แล้ว commit
-`portfolio.json` + `index.html` กลับเข้า repo อัตโนมัติ
+`portfolios/*.json` + ไฟล์ HTML กลับเข้า repo อัตโนมัติ
 
 > ต้องรันหลังตลาดสหรัฐปิดของวันนั้น (หลัง 04:00 น. ไทยของเช้าถัดไป) ถ้ารันก่อนหน้านั้น
 > ราคา Open ยังไม่ถูกเผยแพร่ สคริปต์จะเลื่อนการซื้อออกไปและบอกใน log ว่า `buy deferred`
@@ -105,11 +106,30 @@ Workflow รันเองวันอังคาร–เสาร์ (UTC) �
 
 | ไฟล์ | หน้าที่ |
 |---|---|
-| `portfolio.json` | สถานะพอร์ต — เงินต้น, น้ำหนักเป้าหมาย, จำนวนหุ้น, ราคาเข้า, ประวัติมูลค่ารายวัน |
-| `update.py` | ดึงราคาจาก Stooq (สำรอง: Yahoo Finance) แล้วอัพเดท `portfolio.json` — stdlib ล้วน ไม่ต้อง pip install |
-| `build.py` | เรนเดอร์ `portfolio.json` → `index.html` |
-| `index.html` | dashboard (ไฟล์ที่ Pages เสิร์ฟ — **อย่าแก้มือ** มันถูกเขียนทับทุกวัน) |
+| `portfolios/*.json` | สถานะของแต่ละพอร์ต — จำนวนหุ้น, ราคาเข้า, benchmark, ประวัติมูลค่ารายวัน |
+| `update.py` | ดึงราคา (Alpha Vantage → Stooq → Yahoo) แล้วอัพเดททุกไฟล์ใน `portfolios/` — stdlib ล้วน |
+| `build.py` | เรนเดอร์ `portfolios/*.json` → `<slug>.html` ของแต่ละพอร์ต + `index.html` หน้ารวม |
+| `*.html` | dashboard (**อย่าแก้มือ** ถูกเขียนทับทุกครั้งที่รัน) |
 | `.github/workflows/update.yml` | ตารางรันอัตโนมัติ |
+
+## เพิ่มพอร์ตใหม่
+
+สร้างไฟล์ใหม่ใน `portfolios/` แล้ว push — `build.py` กับ `update.py` จะเจอเอง ไม่ต้องแก้โค้ด
+
+ฟิลด์สำคัญ:
+
+| ฟิลด์ | ความหมาย |
+|---|---|
+| `slug` | ชื่อไฟล์ HTML ที่จะถูกสร้าง (`<slug>.html`) |
+| `status` | `"pending_open"` = ให้ระบบไปหาราคา Open ของ `entry_date` มาซื้อให้ · `"open"` = ใส่ `shares`/`entry` มาเองแล้ว |
+| `start_cash` | เงินต้น (ถ้า `pending_open`) หรือต้นทุนรวม (ถ้า `open`) — ใช้เป็นฐานคำนวณ Total return |
+| `target` | น้ำหนักเป้าหมายของแต่ละตัว รวมต้องได้ 1.00 |
+| `track_since` | วันที่เริ่มเทียบกับ S&P 500 |
+| `track_base` | มูลค่าตั้งต้นของการเทียบ — ใส่ `null` ให้ระบบเก็บมูลค่าพอร์ต ณ วันแรกที่รันมาใช้เอง |
+
+> **`track_since` / `track_base` มีไว้ทำไม:** พอร์ตที่ลอกมาจากบัญชีจริงมีต้นทุนเฉลี่ยที่เกิดจากการซื้อ
+> หลายครั้งคนละเวลา เอาไปเทียบกับดัชนีตรงๆ ไม่ได้ ระบบจึงแยกเป็นสองตัวเลข —
+> **Total return** (เทียบต้นทุน) กับ **Since tracking** (เทียบมูลค่าวันที่เริ่ม track ซึ่งใช้เทียบ S&P ได้)
 
 ## รันเองบนเครื่อง
 
@@ -119,17 +139,18 @@ python3 update.py --dry-run   # ดูว่าจะได้ราคาอะ
 python3 update.py && python3 build.py
 ```
 
-## แก้พอร์ต
+## แก้พอร์ตเดิม
 
-แก้ `portfolio.json` แล้ว push — `target` ของทุกตัวต้องรวมได้ 1.00
-ถ้าอยากเริ่มพอร์ตใหม่หมด: ตั้ง `"status": "pending_open"`, `"entry_date"` เป็นวันที่ต้องการ,
-เคลียร์ `history` กับ `log` ให้เป็น `[]` แล้วตั้ง `shares`/`entry` ของทุกตัวเป็น `0`/`null`
+แก้ไฟล์ใน `portfolios/` แล้ว push — `target` ของทุกตัวต้องรวมได้ 1.00
+ถ้าอยากรีเซ็ตพอร์ตใดพอร์ตหนึ่ง: ตั้ง `"status": "pending_open"`, `"entry_date"` เป็นวันที่ต้องการ,
+เคลียร์ `history` / `log` ให้เป็น `[]`, ตั้ง `shares`/`entry` ทุกตัวเป็น `0`/`null`
+และตั้ง `track_base` เป็น `null` กับ `benchmark.entry` เป็น `null` ด้วย
 
 ## Troubleshooting
 
-- **เว็บค้างที่ข้อมูลเก่า ทั้งที่ `portfolio.json` บน main ใหม่แล้ว** → job `deploy` ไม่ได้รัน
-  เทียบกันได้ที่ `raw.githubusercontent.com/.../main/portfolio.json` (ของจริงใน repo) กับ
-  `mninsuwan-ai.github.io/paper-trade/portfolio.json` (ของที่เผยแพร่) ถ้า `last_updated` ไม่ตรงกันคือ deploy ไม่ทำงาน
+- **เว็บค้างที่ข้อมูลเก่า ทั้งที่ไฟล์บน main ใหม่แล้ว** → job `deploy` ไม่ได้รัน
+  เทียบกันได้ที่ `raw.githubusercontent.com/.../main/portfolios/sector-core.json` (ของจริงใน repo) กับ
+  `mninsuwan-ai.github.io/paper-trade/portfolios/sector-core.json` (ของที่เผยแพร่) ถ้า `last_updated` ไม่ตรงกันคือ deploy ไม่ทำงาน
 - **`deploy-pages` ฟ้อง `Get Pages site failed` / 404** → Settings → Pages ยังไม่ได้ตั้ง Source เป็น GitHub Actions
 - **หน้าเว็บ 404 ตอนตั้งครั้งแรก** → deploy รอบแรกใช้เวลาสักพัก รอ 2-3 นาทีแล้ว hard refresh (Ctrl+F5)
 - **`Price fetch failed for: MSFT, AMZN, ...` ทุกตัว** → Stooq/Yahoo บล็อก IP ของ runner ทำตามข้อ 5

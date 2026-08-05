@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch prices and update portfolio.json for the $10,000 paper-trade portfolio.
+"""Fetch prices and update every portfolio under portfolios/.
 
 Stdlib only - no pip install needed.
 
@@ -21,6 +21,7 @@ Usage:
 import csv
 import datetime as dt
 import http.cookiejar
+import glob
 import io
 import json
 import os
@@ -31,7 +32,7 @@ import urllib.parse
 import urllib.request
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(BASE, "portfolio.json")
+PORTFOLIO_DIR = os.path.join(BASE, "portfolios")
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 AV_KEY = os.environ.get("ALPHAVANTAGE_KEY", "").strip()
@@ -185,7 +186,7 @@ def src_yahoo(ticker):
 SOURCES = [("alphavantage", src_alphavantage), ("stooq", src_stooq), ("yahoo", src_yahoo)]
 
 
-def series(ticker):
+def _series_uncached(ticker):
     """Return (bars_ascending, source_name, [failure strings])."""
     problems = []
     for name, fn in SOURCES:
@@ -197,7 +198,50 @@ def series(ticker):
     return None, None, problems
 
 
-# ------------------------------------------------------------------- main
+# ----------------------------------------------------------- shared cache
+
+_CACHE = {}
+
+
+def series(ticker):
+    """Cached wrapper around _series_uncached.
+
+    Several portfolios hold the same names, and Alpha Vantage's free tier allows
+    only 25 requests a day, so every ticker is fetched at most once per run.
+    """
+    if ticker not in _CACHE:
+        _CACHE[ticker] = _series_uncached(ticker)
+        _CACHE[ticker] += (False,)          # first look-up, not a cache hit
+    else:
+        b, s, p, _ = _CACHE[ticker]
+        return b, s, p, True
+    b, s, p, _ = _CACHE[ticker]
+    return b, s, p, False
+
+
+# ---------------------------------------------------------------- portfolios
+
+def discover():
+    """Return the portfolio files to process, migrating the legacy layout if needed."""
+    os.makedirs(PORTFOLIO_DIR, exist_ok=True)
+    legacy = os.path.join(BASE, "portfolio.json")
+    target = os.path.join(PORTFOLIO_DIR, "sector-core.json")
+    if os.path.exists(legacy) and not os.path.exists(target):
+        d = json.load(open(legacy, encoding="utf-8"))
+        d.setdefault("name", "Sector Core")
+        d.setdefault("slug", "sector-core")
+        d.setdefault("subtitle", "One large-cap leader per GICS sector, $10,000 at the open")
+        # The benchmark for this one has always run from the entry date with the
+        # full starting cash as its notional.
+        d.setdefault("track_since", d["entry_date"])
+        d.setdefault("track_base", d["start_cash"])
+        with open(target, "w", encoding="utf-8") as f:
+            json.dump(d, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        os.remove(legacy)
+        log(f"Migrated portfolio.json -> {os.path.relpath(target, BASE)}\n")
+    return sorted(glob.glob(os.path.join(PORTFOLIO_DIR, "*.json")))
+
 
 def probe():
     log("Probing price sources with MSFT...\n")
@@ -214,31 +258,32 @@ def probe():
     return 0
 
 
-def main():
-    if PROBE:
-        return probe()
-
-    d = json.load(open(SRC, encoding="utf-8"))
+def run_one(path):
+    """Update a single portfolio file. Returns True if it was fully priced."""
+    d = json.load(open(path, encoding="utf-8"))
     positions = d["positions"]
     entry_date = d["entry_date"]
     start = float(d["start_cash"])
     need_entry = d.get("status") != "open"
 
-    # Benchmark: the same $10,000 put into SPY on the same day. SPY is used rather than
-    # ^GSPC because the index symbol is not available on Alpha Vantage's free tier.
+    # Where the benchmark comparison starts. For a portfolio bought in one go this is
+    # the entry date; for one mirrored from an existing account it is the day tracking
+    # began, because the cost basis was accumulated over many different dates and
+    # comparing that to an index would be meaningless.
+    anchor = d.get("track_since") or entry_date
     bench = d.setdefault("benchmark", {
         "ticker": "SPY", "name": "S&P 500 (SPY ETF)",
         "entry": None, "shares": 0, "last": None, "prev_close": None})
 
-    log(f"Alpha Vantage key: {'present' if AV_KEY else 'NOT set'}")
-    log(f"Mode: {'INITIAL BUY (entry ' + entry_date + ')' if need_entry else 'daily mark-to-market'}\n")
+    log(f"=== {d.get('name', d.get('slug', path))} "
+        f"({'INITIAL BUY, entry ' + entry_date if need_entry else 'mark-to-market'}) ===")
 
     failures, waiting, notes = [], [], []
     latest_date = None
 
     for p in positions:
         tk = p["ticker"]
-        bars, src, problems = series(tk)
+        bars, src, problems, hit = series(tk)
         if not bars:
             failures.append(tk)
             log(f"  {tk:<6} FAILED - keeping previous values")
@@ -252,9 +297,8 @@ def main():
         latest_date = max(latest_date or last_bar["date"], last_bar["date"])
 
         if need_entry:
-            bar = next((r for r in bars if r["date"] == entry_date), None)
-            if bar is None:
-                bar = next((r for r in bars if r["date"] >= entry_date), None)
+            bar = next((r for r in bars if r["date"] == entry_date), None) \
+                or next((r for r in bars if r["date"] >= entry_date), None)
             if bar is None:
                 waiting.append(tk)
                 log(f"  {tk:<6} {src:<13} no bar yet for {entry_date} "
@@ -264,33 +308,12 @@ def main():
             p["shares"] = round(start * p["target"] / p["entry"], 6)
             if bar["date"] != entry_date:
                 notes.append(f"{tk} entry taken from {bar['date']}")
-        log(f"  {tk:<6} {src:<13} entry={p['entry']} last={p['last']} ({last_bar['date']})")
-
-    # --- benchmark ------------------------------------------------------------
-    # A benchmark problem must never block the portfolio itself, so its failures are
-    # reported but kept out of `failures`.
-    bench_bars, bench_src, bench_problems = series(bench["ticker"])
-    if bench_bars:
-        bench["last"] = round(bench_bars[-1]["close"], 4)
-        bench["prev_close"] = round(bench_bars[-2]["close"], 4) if len(bench_bars) > 1 else None
-        if not bench.get("entry"):
-            bar = next((r for r in bench_bars if r["date"] == entry_date), None) \
-                or next((r for r in bench_bars if r["date"] >= entry_date), None)
-            if bar:
-                bench["entry"] = round(bar["open"], 4)
-                bench["shares"] = round(start / bench["entry"], 6)
-        log(f"  {bench['ticker']:<6} {bench_src:<13} entry={bench['entry']} "
-            f"last={bench['last']} ({bench_bars[-1]['date']})  [benchmark]")
-    else:
-        log(f"  {bench['ticker']:<6} benchmark fetch failed - keeping previous values")
-        for pr in bench_problems:
-            log(f"           {pr}")
+        log(f"  {tk:<6} {src + (' *' if hit else ''):<15} entry={p['entry']} "
+            f"last={p['last']} ({last_bar['date']})")
 
     blocked = failures + waiting
 
     if not failures:
-        # Drop stale "fetch failed" notices once everything is healthy again -
-        # they are noise on the dashboard's activity log.
         kept = [e for e in d.get("log", [])
                 if not str(e.get("note", "")).startswith("Price fetch failed")]
         if len(kept) != len(d.get("log", [])):
@@ -303,25 +326,55 @@ def main():
         d["status"] = "open"
         d.setdefault("log", []).append({
             "date": entry_date,
-            "note": f"Opened 10 positions at the {entry_date} market open. "
+            "note": f"Opened {len(positions)} positions at the {entry_date} market open. "
                     f"Total cost ${cost:,.2f}, residual cash ${d['cash']:,.2f}."
                     + (" " + "; ".join(notes) if notes else "")})
         d.setdefault("history", [])
         if not any(h["date"] == entry_date for h in d["history"]):
             d["history"].append({"date": entry_date, "value": round(start, 2),
                                  "bench": round(start, 2)})
-        log(f"\n  -> BUY executed. cost={cost:,.2f} cash={d['cash']:,.2f}")
+        log(f"  -> BUY executed. cost={cost:,.2f} cash={d['cash']:,.2f}")
     elif need_entry:
         reason = []
         if failures:
             reason.append("fetch failed for " + ", ".join(failures))
         if waiting:
             reason.append(f"{entry_date} open not published yet for " + ", ".join(waiting))
-        log("\n  -> buy NOT executed: " + "; ".join(reason))
+        log("  -> buy NOT executed: " + "; ".join(reason))
 
     if d.get("status") == "open" and latest_date:
         total = sum((p["last"] or p["entry"] or 0) * (p["shares"] or 0)
                     for p in positions) + float(d.get("cash") or 0)
+
+        # --- benchmark: a failure here must never affect the portfolio itself ---
+        bench_bars, bench_src, bench_problems, bench_hit = series(bench["ticker"])
+        if bench_bars:
+            bench["last"] = round(bench_bars[-1]["close"], 4)
+            bench["prev_close"] = round(bench_bars[-2]["close"], 4) if len(bench_bars) > 1 else None
+            if not bench.get("entry"):
+                bar = next((r for r in bench_bars if r["date"] == anchor), None) \
+                    or next((r for r in bench_bars if r["date"] >= anchor), None)
+                if bar:
+                    # Notional: the starting cash for a fresh portfolio, otherwise the
+                    # portfolio's own value on the day tracking started.
+                    base = d.get("track_base")
+                    if base is None:
+                        base = round(total, 2)
+                        d["track_base"] = base
+                        d.setdefault("log", []).append({
+                            "date": bar["date"],
+                            "note": f"Benchmark tracking started at ${base:,.2f}, "
+                                    f"matched into SPY at ${bar['open']:,.2f}."})
+                    bench["entry"] = round(bar["open"], 4)
+                    bench["shares"] = round(float(base) / bench["entry"], 6)
+            log(f"  {bench['ticker']:<6} {bench_src + (' *' if bench_hit else ''):<15} "
+                f"entry={bench['entry']} last={bench['last']} "
+                f"({bench_bars[-1]['date']})  [benchmark]")
+        else:
+            log(f"  {bench['ticker']:<6} benchmark fetch failed - keeping previous values")
+            for pr in bench_problems:
+                log(f"           {pr}")
+
         bench_total = None
         if bench.get("entry") and bench.get("last"):
             bench_total = round(bench["last"] * bench["shares"], 2)
@@ -338,11 +391,13 @@ def main():
 
         d["last_price_date"] = latest_date
         pl = total - start
-        log(f"  -> total={total:,.2f}  P/L={pl:+,.2f} ({pl / start * 100:+.2f}%)")
-        if bench_total is not None:
-            bpl = bench_total - start
-            log(f"  -> S&P 500 {bench_total:,.2f}  ({bpl / start * 100:+.2f}%)   "
-                f"alpha {(pl - bpl) / start * 100:+.2f} pts")
+        log(f"  -> total={total:,.2f}  P/L vs cost={pl:+,.2f} ({pl / start * 100:+.2f}%)")
+        base = d.get("track_base")
+        if bench_total is not None and base:
+            sr = (total / float(base) - 1) * 100
+            br = (bench_total / float(base) - 1) * 100
+            log(f"  -> since {anchor}: portfolio {sr:+.2f}%  S&P 500 {br:+.2f}%  "
+                f"alpha {sr - br:+.2f} pts")
 
     if failures:
         d.setdefault("log", []).append({
@@ -353,17 +408,34 @@ def main():
     d["last_updated"] = dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
 
     if DRY:
-        log("\ndry-run: portfolio.json NOT written")
-        return 0
+        log("  dry-run: file NOT written\n")
+        return not failures
 
-    tmp = SRC + ".tmp"
+    tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(d, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    os.replace(tmp, SRC)
-    log("\nportfolio.json updated")
-    # Fail the workflow step only if literally nothing could be fetched.
-    return 1 if len(failures) == len(positions) else 0
+    os.replace(tmp, path)
+    log(f"  written: {os.path.relpath(path, BASE)}\n")
+    return not failures
+
+
+def main():
+    if PROBE:
+        return probe()
+
+    log(f"Alpha Vantage key: {'present' if AV_KEY else 'NOT set'}")
+    files = discover()
+    if not files:
+        log("No portfolios found under portfolios/.")
+        return 1
+    log(f"Portfolios: {', '.join(os.path.basename(f) for f in files)}\n")
+
+    results = [run_one(f) for f in files]
+    fetched = sum(1 for v in _CACHE.values() if v[0])
+    log(f"Tickers fetched this run: {fetched} unique "
+        f"(a '*' next to the source means the price came from this run's cache)")
+    return 0 if any(results) else 1
 
 
 if __name__ == "__main__":
