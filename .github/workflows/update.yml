@@ -2,14 +2,13 @@ name: Update paper-trade portfolio
 
 on:
   schedule:
-    # GitHub does not guarantee scheduled runs: jobs queued on the hour or half hour sit in the
-    # busiest slots and can be delayed for hours or dropped entirely. So: odd minutes, and a
-    # second attempt later in the day. The job is idempotent, running twice changes nothing.
+    # 01:07 UTC Tue-Sat = 08:07 Thai time, after each Mon-Fri US close.
     #
-    # 01:07 UTC Tue-Sat = 08:07 Thai time, after Mon-Fri US closes.
+    # Deliberately ONE slot only. Alpha Vantage's free tier allows 25 requests a day and a
+    # single run spends about 20, so a second scheduled slot would blow the quota and make
+    # the later run fail on every ticker. The odd minute is also deliberate: GitHub queues
+    # cron jobs set to :00 and :30 in its busiest slots, where they get delayed or dropped.
     - cron: "7 1 * * 2-6"
-    # 05:23 UTC Tue-Sat = 12:23 Thai time - safety net if the first slot was dropped.
-    - cron: "23 5 * * 2-6"
   workflow_dispatch: {}        # lets you run it manually from the Actions tab
   push:
     branches: [main]

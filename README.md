@@ -15,10 +15,11 @@ LIN / JNJ / PG 5% each.
 
 ### Tracking trade &mdash; `portfolios/tracking-trade.json`
 
-The 12 largest holdings by market value from the Dime monthly statement of July 2026.
+The 15 largest holdings by market value from the Dime monthly statement of July 2026.
 Share counts and entry prices are taken straight from the statement, so `entry` is the
 reported **average cost per share** rather than a single purchase price. Cost basis
-**$6,867.29** across META, AMZN, DOCN, MELI, AXON, NVDA, MSFT, CRWD, GOOGL, RBRK, AAPL, TSLA.
+**$7,368.04** across META, AMZN, DOCN, MELI, AXON, NVDA, MSFT, CRWD, GOOGL, RBRK, AAPL,
+TSLA, NBIS, TTMI, SNOW.
 
 Because that cost basis was accumulated over many different dates, its benchmark starts on
 **2026-08-05** instead, from whatever the portfolio was worth that day.
@@ -72,8 +73,13 @@ Stooq กับ Yahoo มักบล็อก IP ของ GitHub runner (ต�
 2. Repo → **Settings → Secrets and variables → Actions → New repository secret**
 3. Name: `ALPHAVANTAGE_KEY` — Secret: key ที่ได้มา → Add secret
 
-โควต้าฟรี 25 requests/วัน ปัจจุบัน 2 พอร์ตใช้ 20 ครั้ง/วัน (หุ้นซ้ำระหว่างพอร์ตดึงครั้งเดียว) — ถ้าจะเพิ่มพอร์ตที่ 3 ต้องระวังโควต้า
 ถ้าไม่ใส่ก็ยังรันได้ สคริปต์จะไปลอง Stooq → Yahoo ต่อ แต่ไม่การันตี
+
+**โควต้า** — ฟรี 25 requests/วัน ปัจจุบันใช้ **23** (หุ้นไม่ซ้ำ 22 ตัว + SPY) เหลือที่ว่าง **2 ตัว**
+หุ้นที่ซ้ำกันระหว่างพอร์ตดึงครั้งเดียวแล้วใช้ร่วมกัน ดังนั้นพอร์ตใหม่ที่ประกอบจากหุ้นเดิมล้วนๆ ไม่กินโควต้าเพิ่ม
+
+> ด้วยเหตุนี้ cron จึงตั้งไว้ **รอบเดียว** — สองรอบจะกลายเป็น 46 requests/วัน เกินโควต้า
+> รอบหลังจะพังทุกตัว การกด Run workflow เองก็กินอีก 23 ครั้งเช่นกัน วันนึงกดเองได้ 1 ครั้ง
 
 ### 6. รันครั้งแรกเพื่อซื้อ
 
@@ -93,14 +99,13 @@ Repo → แท็บ **Actions** → *Update paper-trade portfolio* → **Run w
 
 ## หลังจากนี้
 
-Workflow รันเองวันอังคาร–เสาร์ (UTC) เวลา **01:07 UTC ≈ 08:07 น. ไทย** ซึ่งครอบคลุมการปิดตลาดของจันทร์–ศุกร์ US
-ทั้งฤดูร้อน (EDT) และฤดูหนาว (EST) — ไม่ต้องเปิดคอมพิวเตอร์ทิ้งไว้
-
-มีรอบสำรองอีกรอบที่ **05:23 UTC ≈ 12:23 น. ไทย**
+Workflow รันเอง **รอบเดียว** วันอังคาร–เสาร์ (UTC) เวลา **01:07 UTC ≈ 08:07 น. ไทย**
+ซึ่งครอบคลุมการปิดตลาดของจันทร์–ศุกร์ US ทั้งฤดูร้อน (EDT) และฤดูหนาว (EST)
+ไม่ต้องเปิดคอมพิวเตอร์ทิ้งไว้
 
 > GitHub **ไม่การันตี**ว่า scheduled run จะรันตรงเวลา และอาจ *ข้ามไปเลย* ถ้าตั้งไว้ตรงนาที `:00` หรือ `:30`
-> ซึ่งเป็นช่วงที่คนตั้งกระจุกกัน — นั่นคือเหตุผลที่ cron ในไฟล์นี้ตั้งนาทีแปลกๆ และมี 2 รอบ
-> job รันซ้ำได้โดยผลไม่เปลี่ยน จึงไม่มีผลเสียถ้ารันทั้งสองรอบ
+> ซึ่งเป็นช่วงที่คนตั้งกระจุกกัน — นั่นคือเหตุผลที่นาทีใน cron ตั้งเป็นเลขแปลกๆ
+> ถ้ารอบไหนโดนข้าม กด Run workflow เองได้ (แต่กินโควต้า Alpha Vantage อีก 23 ครั้ง วันนึงจึงกดได้ครั้งเดียว)
 
 ## ไฟล์ในโปรเจกต์
 
