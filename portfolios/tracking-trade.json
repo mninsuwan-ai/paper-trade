@@ -9,7 +9,7 @@
   "fractional_shares": true,
   "start_cash": 7368.04,
   "cash": 0.0,
-  "track_since": "2026-08-05",
+  "track_since": "2026-07-01",
   "track_base": null,
   "last_updated": null,
   "last_price_date": null,
@@ -193,6 +193,11 @@
     {
       "date": "2026-08-05",
       "note": "Portfolio mirrored from the Dime monthly statement for July 2026 - the 15 largest holdings by market value. Entry prices are the reported average cost per share; share counts are as stated."
+    },
+    {
+      "date": "2026-08-06",
+      "note": "Daily history reconstructed from 2026-07-01 using each holding's closing prices; benchmark re-based to the same day."
     }
-  ]
+  ],
+  "history_from": "2026-07-01"
 }

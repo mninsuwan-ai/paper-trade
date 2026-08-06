@@ -302,6 +302,54 @@ def risk_stats(stock_bars, mkt_rets):
     return round(beta, 4), round(rv, 4), round(tv, 4), len(dropped)
 
 
+def backfill(d, closes, bench_bars, bench):
+    """Rebuild the whole daily history from `history_from` using the fetched bars.
+
+    Share counts never change in these portfolios, so the value on any past day is just
+    shares x that day's close. That lets a portfolio mirrored from a statement show a real
+    trend line immediately instead of waiting weeks to accumulate one. Benchmark shares are
+    re-derived so that SPY starts from exactly the same amount on the same day.
+
+    Rewritten from scratch on every run, so it is idempotent.
+    """
+    start = d["history_from"]
+    spy = {b["date"]: b["close"] for b in (bench_bars or [])}
+    if not spy:
+        return
+    common = set(spy)
+    for p in d["positions"]:
+        c = closes.get(p["ticker"])
+        if not c:
+            return                      # incomplete data: leave the old history alone
+        common &= set(c)
+    dates = sorted(t for t in common if t >= start)
+    if len(dates) < 2:
+        log(f"  backfill skipped: only {len(dates)} common trading day(s) on or after {start}")
+        return
+
+    base = sum(closes[p["ticker"]][dates[0]] * float(p["shares"] or 0)
+               for p in d["positions"]) + float(d.get("cash") or 0)
+    bench["entry"] = round(spy[dates[0]], 4)
+    bench["shares"] = round(base / bench["entry"], 6)
+    d["track_since"] = dates[0]
+    d["track_base"] = round(base, 2)
+
+    d["history"] = [
+        {"date": t,
+         "value": round(sum(closes[p["ticker"]][t] * float(p["shares"] or 0)
+                            for p in d["positions"]) + float(d.get("cash") or 0), 2),
+         "bench": round(spy[t] * bench["shares"], 2)}
+        for t in dates
+    ]
+    last = d["history"][-1]
+    sr = (last["value"] / base - 1) * 100
+    br = (last["bench"] / base - 1) * 100
+    log(f"  backfilled {len(dates)} days from {dates[0]} "
+        f"(base ${base:,.2f}, SPY @ {bench['entry']})")
+    log(f"  -> since {dates[0]}: portfolio {sr:+.2f}%  S&P 500 {br:+.2f}%  "
+        f"alpha {sr - br:+.2f} pts")
+
+
 def run_one(path):
     """Update a single portfolio file. Returns True if it was fully priced."""
     d = json.load(open(path, encoding="utf-8"))
@@ -324,6 +372,7 @@ def run_one(path):
 
     failures, waiting, notes = [], [], []
     latest_date = None
+    closes = {}          # ticker -> {date: close}, kept for the history backfill
 
     # Benchmark bars are pulled up front (the cache makes this free) so that every
     # holding can be regressed against the same market series for the projection.
@@ -346,6 +395,7 @@ def run_one(path):
                 log(f"           {pr}")
             continue
 
+        closes[tk] = {b["date"]: b["close"] for b in bars}
         last_bar = bars[-1]
         p["last"] = round(last_bar["close"], 4)
         p["prev_close"] = round(bars[-2]["close"], 4) if len(bars) > 1 else None
@@ -416,7 +466,7 @@ def run_one(path):
         if bench_bars:
             bench["last"] = round(bench_bars[-1]["close"], 4)
             bench["prev_close"] = round(bench_bars[-2]["close"], 4) if len(bench_bars) > 1 else None
-            if not bench.get("entry"):
+            if not bench.get("entry") and not d.get("history_from"):
                 bar = next((r for r in bench_bars if r["date"] == anchor), None) \
                     or next((r for r in bench_bars if r["date"] >= anchor), None)
                 if bar:
@@ -458,11 +508,14 @@ def run_one(path):
         pl = total - start
         log(f"  -> total={total:,.2f}  P/L vs cost={pl:+,.2f} ({pl / start * 100:+.2f}%)")
         base = d.get("track_base")
-        if bench_total is not None and base:
+        if bench_total is not None and base and not d.get("history_from"):
             sr = (total / float(base) - 1) * 100
             br = (bench_total / float(base) - 1) * 100
             log(f"  -> since {anchor}: portfolio {sr:+.2f}%  S&P 500 {br:+.2f}%  "
                 f"alpha {sr - br:+.2f} pts")
+
+    if d.get("history_from") and d.get("status") == "open" and not failures:
+        backfill(d, closes, bench_bars, bench)
 
     if failures:
         d.setdefault("log", []).append({
