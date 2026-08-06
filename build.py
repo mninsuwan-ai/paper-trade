@@ -238,9 +238,19 @@ def montecarlo(d, c):
         "@@BETA@@": f"{sum(p['beta'] * p['_mv'] for p in ok) / tot:.2f}",
         "@@VOL@@": f"{sum(p.get('vol', 0) * p['_mv'] for p in ok) / tot * 100:.0f}",
         "@@DAYS@@": str((d.get("benchmark") or {}).get("stat_days", 0)),
+        "@@FLAG@@": _statflag(ok),
     }.items():
         tpl = tpl.replace(k, v)
     return tpl
+
+
+def _statflag(positions):
+    """Note which holdings had bars discarded as split artifacts."""
+    bad = [p for p in positions if p.get("stat_dropped")]
+    if not bad:
+        return ""
+    names = ", ".join(f"{p['ticker']} ({p['stat_dropped']})" for p in bad)
+    return (" &middot; split-like days excluded for " + names)
 
 
 TPL_MC = """<div class="card"><h2>Projection &mdash; Monte Carlo</h2>
@@ -250,7 +260,7 @@ TPL_MC = """<div class="card"><h2>Projection &mdash; Monte Carlo</h2>
   <label>Assumed market return <b><span id="mcM">8.0</span>%/yr</b>
     <input type="range" id="mcMk" min="0" max="14" step="0.5" value="8"></label>
   <span class="note">@@PATHS@@ paths &middot; portfolio beta @@BETA@@ &middot;
-  weighted volatility @@VOL@@%/yr &middot; estimated from @@DAYS@@ trading days</span>
+  weighted volatility @@VOL@@%/yr &middot; estimated from @@DAYS@@ trading days@@FLAG@@</span>
 </div>
 <canvas id="mc" height="95"></canvas>
 <div id="mcOut" class="mcout"></div>

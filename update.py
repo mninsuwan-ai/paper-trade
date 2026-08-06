@@ -268,14 +268,23 @@ def logrets(bars):
     return out
 
 
+# A single day beyond this is almost never a real move over a 100-day window. In practice
+# it means a stock split: Alpha Vantage's free TIME_SERIES_DAILY endpoint returns
+# as-traded prices, so a 2-for-1 split shows up as a clean -50% day. Left in, one such
+# bar wrecks the beta and volatility for that holding (CrowdStrike came back at 228%/yr).
+SPLIT_GUARD = 0.35
+
+
 def risk_stats(stock_bars, mkt_rets):
-    """One-factor risk estimate: (beta, annualised residual vol, annualised vol).
+    """One-factor risk estimate: (beta, residual vol, total vol, days dropped).
 
     Regresses the stock's daily log returns on the benchmark's. Returns None when
     there is not enough overlap to say anything meaningful.
     """
     r = logrets(stock_bars)
     dates = sorted(set(r) & set(mkt_rets))
+    dropped = [t for t in dates if abs(r[t]) > SPLIT_GUARD]
+    dates = [t for t in dates if abs(r[t]) <= SPLIT_GUARD]
     n = len(dates)
     if n < 60:
         return None
@@ -290,7 +299,7 @@ def risk_stats(stock_bars, mkt_rets):
     resid = [b - my - beta * (a - mx) for a, b in zip(x, y)]
     rv = math.sqrt(sum(e * e for e in resid) / (n - 2)) * math.sqrt(252)
     tv = math.sqrt(sum((b - my) ** 2 for b in y) / (n - 1)) * math.sqrt(252)
-    return round(beta, 4), round(rv, 4), round(tv, 4)
+    return round(beta, 4), round(rv, 4), round(tv, 4), len(dropped)
 
 
 def run_one(path):
@@ -344,7 +353,13 @@ def run_one(path):
 
         st = risk_stats(bars, mkt_rets) if mkt_rets else None
         if st:
-            p["beta"], p["resid_vol"], p["vol"] = st
+            p["beta"], p["resid_vol"], p["vol"], nd = st
+            if nd:
+                p["stat_dropped"] = nd
+                log(f"           {tk}: ignored {nd} day(s) beyond "
+                    f"{SPLIT_GUARD:.0%} when measuring risk (likely a split)")
+            else:
+                p.pop("stat_dropped", None)
 
         if need_entry:
             bar = next((r for r in bars if r["date"] == entry_date), None) \
