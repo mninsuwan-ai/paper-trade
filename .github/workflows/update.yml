@@ -2,13 +2,18 @@ name: Update paper-trade portfolio
 
 on:
   schedule:
-    # 01:07 UTC Tue-Sat = 08:07 Thai time, after each Mon-Fri US close.
+    # 22:07 UTC Mon-Fri = 05:07 Thai time the next morning.
+    #
+    # The US close is 20:00 UTC in summer / 21:00 in winter, so the data is already out.
+    # Running here rather than at 01:07 UTC leaves about three hours of slack before
+    # anyone looks at the page over breakfast in Bangkok - GitHub routinely runs cron
+    # jobs late, and a slot that lands minutes before you check looks like a failure.
     #
     # Deliberately ONE slot only. Alpha Vantage's free tier allows 25 requests a day and a
-    # single run spends about 20, so a second scheduled slot would blow the quota and make
+    # single run spends about 23, so a second scheduled slot would blow the quota and make
     # the later run fail on every ticker. The odd minute is also deliberate: GitHub queues
     # cron jobs set to :00 and :30 in its busiest slots, where they get delayed or dropped.
-    - cron: "7 1 * * 2-6"
+    - cron: "7 22 * * 1-5"
   workflow_dispatch: {}        # lets you run it manually from the Actions tab
   push:
     branches: [main]
