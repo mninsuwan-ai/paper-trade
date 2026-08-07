@@ -82,6 +82,7 @@ tr:last-child td{border-bottom:none}
 .presets button{background:var(--bg);border:1px solid var(--line);color:var(--tx);
 border-radius:99px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit}
 .presets button:hover{border-color:var(--acc);color:var(--acc)}
+tr.sep td{border-top:2px solid var(--line);padding-top:15px}
 .mcout{margin-top:16px}
 .mcout table{font-size:14px}
 .mcout td,.mcout th{padding:9px 12px}
@@ -504,6 +505,23 @@ def render_portfolio(d, portfolios):
     vs = ""
     if live and c["bm_live"] and c["base"]:
         pv, bv = c["total"], c["bm_total"]
+        # A mirrored portfolio carries gains banked before tracking began. Showing them in
+        # the same table is useful, but they are NOT comparable to the S&P row above, which
+        # only covers the tracked window - so the row is separated and labelled as such.
+        cost_row = ""
+        cost_note = ""
+        if c["split"]:
+            cost_note = (
+                '<div class="mcnote">The bottom row measures against what these shares cost, '
+                'which was paid on many dates before tracking started. It answers "how is the '
+                'position doing overall", not "did it beat the index" &mdash; only the top two '
+                'rows cover the same window and can be compared to each other.</div>')
+            cost_row = (
+                f'<tr class="sep"><td><b>Since cost basis</b>'
+                f'<div class="sub">what was actually paid for these shares</div></td>'
+                f'<td class="n">{money(c["start"])}</td><td class="n">{money(pv)}</td>'
+                f'<td class="n {cls(c["pl"])}">{signed(c["plpct"], 2, True)}</td>'
+                f'<td class="n flat">&mdash;</td></tr>')
         vs = f"""<div class="card"><h2>Head to head &mdash; since {d.get('track_since')}</h2>
 <table><thead><tr><th></th><th class="n">Started at</th><th class="n">Now</th>
 <th class="n">Return</th><th class="n">Today</th></tr></thead><tbody>
@@ -516,9 +534,10 @@ def render_portfolio(d, portfolios):
     <td class="n">{money(c['base'])}</td><td class="n">{money(bv)}</td>
     <td class="n {cls(c['bm_ret'])}">{signed(c['bm_ret'],2,True)}</td>
     <td class="n {cls(c['bm_day'] or 0)}">{signed(c['bm_day'],2,True) if c['bm_day'] is not None else '&mdash;'}</td></tr>
-</tbody></table>
+{cost_row}</tbody></table>
 <div class="alpha {cls(a)}">{signed(a,2)} pts {'ahead of' if a >= 0 else 'behind'} the S&amp;P 500
-<span class="sub">&nbsp;&middot;&nbsp; {money(abs(pv - bv))} difference</span></div></div>"""
+<span class="sub">&nbsp;&middot;&nbsp; {money(abs(pv - bv))} difference</span></div>
+{cost_note}</div>"""
 
     mc = montecarlo(d, c)
     stress = stresstest(d, c)
