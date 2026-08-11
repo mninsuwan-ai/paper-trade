@@ -61,7 +61,13 @@ jobs:
           git config user.name  "paper-trade-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -A portfolios *.html portfolio.json 2>/dev/null || true
+          # Plain `git add -A`: naming individual paths is fragile, because git aborts the
+          # whole command if any pathspec matches nothing. That is exactly what happened
+          # once portfolio.json was migrated away - nothing was staged, the next step saw a
+          # clean index, and the job reported "No changes to commit" every day while the
+          # repo silently stopped recording state.
+          git add -A
+          git status --short
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0

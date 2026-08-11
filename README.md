@@ -21,8 +21,9 @@ reported **average cost per share** rather than a single purchase price. Cost ba
 **$7,368.04** across META, AMZN, DOCN, MELI, AXON, NVDA, MSFT, CRWD, GOOGL, RBRK, AAPL,
 TSLA, NBIS, TTMI, SNOW.
 
-Because that cost basis was accumulated over many different dates, its benchmark starts on
-**2026-08-05** instead, from whatever the portfolio was worth that day.
+Because that cost basis was accumulated over many different dates, the benchmark comparison
+runs from **2026-07-01** instead, starting from whatever the portfolio was worth that day.
+The Head to head card also carries a separate "Since cost basis" row for the overall position.
 
 ---
 
@@ -152,6 +153,10 @@ history รายวันย้อนหลังให้จากราคา
 
 > ถ้ามีหุ้นตัวใดตัวหนึ่งดึงราคาไม่ได้ ระบบจะข้ามการ backfill ทั้งชุดแล้วเก็บ history เดิมไว้
 > ดีกว่าวาดกราฟจากข้อมูลที่ไม่ครบ
+
+**อีกประโยชน์: กราฟไม่ขาดวัน** ถ้า workflow ไม่ได้รันวันไหน (cron โดนข้าม, commit ล้ม, แอปปิด)
+พอรันรอบถัดไปมันจะเติมวันที่หายให้เองจากราคาย้อนหลัง ต่างจากการต่อทีละวันที่พอพลาดแล้วหายถาวร
+พอร์ตที่ซื้อทีเดียวและมี `benchmark.entry` อยู่แล้ว จะเก็บจุดอ้างอิงเดิมไว้ไม่เขียนทับ
 
 > **`track_since` / `track_base` มีไว้ทำไม:** พอร์ตที่ลอกมาจากบัญชีจริงมีต้นทุนเฉลี่ยที่เกิดจากการซื้อ
 > หลายครั้งคนละเวลา เอาไปเทียบกับดัชนีตรงๆ ไม่ได้ ระบบจึงแยกเป็นสองตัวเลข —

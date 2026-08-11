@@ -327,12 +327,18 @@ def backfill(d, closes, bench_bars, bench):
         log(f"  backfill skipped: only {len(dates)} common trading day(s) on or after {start}")
         return
 
-    base = sum(closes[p["ticker"]][dates[0]] * float(p["shares"] or 0)
-               for p in d["positions"]) + float(d.get("cash") or 0)
-    bench["entry"] = round(spy[dates[0]], 4)
-    bench["shares"] = round(base / bench["entry"], 6)
-    d["track_since"] = dates[0]
-    d["track_base"] = round(base, 2)
+    if bench.get("entry") and d.get("track_base"):
+        # Already anchored - most likely the portfolio was bought in one go at a known
+        # price. Keep that anchor and only rebuild the daily series, so re-running never
+        # rewrites history that was recorded correctly the first time.
+        base = float(d["track_base"])
+    else:
+        base = sum(closes[p["ticker"]][dates[0]] * float(p["shares"] or 0)
+                   for p in d["positions"]) + float(d.get("cash") or 0)
+        bench["entry"] = round(spy[dates[0]], 4)
+        bench["shares"] = round(base / bench["entry"], 6)
+        d["track_since"] = dates[0]
+        d["track_base"] = round(base, 2)
 
     d["history"] = [
         {"date": t,
