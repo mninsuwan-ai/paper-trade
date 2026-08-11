@@ -10,9 +10,9 @@
   "start_cash": 7368.04,
   "cash": 0.0,
   "track_since": "2026-07-01",
-  "track_base": null,
-  "last_updated": null,
-  "last_price_date": null,
+  "track_base": 11015.11,
+  "last_updated": "2026-08-11 01:37 UTC",
+  "last_price_date": "2026-08-10",
   "positions": [
     {
       "ticker": "META",
@@ -22,8 +22,11 @@
       "driver": "AI capex, Reels ads & Threads monetisation",
       "shares": 2.0340256,
       "entry": 683.23,
-      "last": null,
-      "prev_close": null
+      "last": 594.92,
+      "prev_close": 592.1,
+      "beta": 1.4802,
+      "resid_vol": 0.4147,
+      "vol": 0.466
     },
     {
       "ticker": "AMZN",
@@ -33,8 +36,11 @@
       "driver": "AWS cloud & e-commerce dominance",
       "shares": 3.9271609,
       "entry": 225.44,
-      "last": null,
-      "prev_close": null
+      "last": 278.09,
+      "prev_close": 274.48,
+      "beta": 1.3796,
+      "resid_vol": 0.3326,
+      "vol": 0.3877
     },
     {
       "ticker": "DOCN",
@@ -44,8 +50,11 @@
       "driver": "Developer-first cloud & GPU droplets",
       "shares": 7.0,
       "entry": 29.66,
-      "last": null,
-      "prev_close": null
+      "last": 129.73,
+      "prev_close": 124.15,
+      "beta": 2.6236,
+      "resid_vol": 0.9047,
+      "vol": 0.9786
     },
     {
       "ticker": "MELI",
@@ -55,8 +64,11 @@
       "driver": "LatAm e-commerce & fintech flywheel",
       "shares": 0.4203916,
       "entry": 2126.09,
-      "last": null,
-      "prev_close": null
+      "last": 1824.34,
+      "prev_close": 1820.6899,
+      "beta": 0.8587,
+      "resid_vol": 0.3704,
+      "vol": 0.3893
     },
     {
       "ticker": "AXON",
@@ -66,8 +78,11 @@
       "driver": "Public-safety hardware plus recurring software",
       "shares": 1.4715992,
       "entry": 503.62,
-      "last": null,
-      "prev_close": null
+      "last": 596.33,
+      "prev_close": 571.01,
+      "beta": 1.509,
+      "resid_vol": 0.6827,
+      "vol": 0.7143
     },
     {
       "ticker": "NVDA",
@@ -77,8 +92,11 @@
       "driver": "AI accelerator demand & CUDA moat",
       "shares": 3.4384141,
       "entry": 160.79,
-      "last": null,
-      "prev_close": null
+      "last": 217.55,
+      "prev_close": 223.96,
+      "beta": 1.883,
+      "resid_vol": 0.294,
+      "vol": 0.402
     },
     {
       "ticker": "MSFT",
@@ -88,8 +106,11 @@
       "driver": "Enterprise AI & Azure cloud leadership",
       "shares": 1.4118561,
       "entry": 470.65,
-      "last": null,
-      "prev_close": null
+      "last": 506.06,
+      "prev_close": 499.99,
+      "beta": 0.9338,
+      "resid_vol": 0.3773,
+      "vol": 0.3995
     },
     {
       "ticker": "CRWD",
@@ -99,8 +120,12 @@
       "driver": "Falcon platform consolidation in security",
       "shares": 3.0,
       "entry": 103.53,
-      "last": null,
-      "prev_close": null
+      "last": 225.16,
+      "prev_close": 214.42,
+      "beta": 1.3672,
+      "resid_vol": 0.5101,
+      "vol": 0.5458,
+      "stat_dropped": 1
     },
     {
       "ticker": "GOOGL",
@@ -110,8 +135,11 @@
       "driver": "Generative AI search & YouTube ads",
       "shares": 1.2676931,
       "entry": 185.38,
-      "last": null,
-      "prev_close": null
+      "last": 357.52,
+      "prev_close": 354.3,
+      "beta": 1.5614,
+      "resid_vol": 0.3135,
+      "vol": 0.3867
     },
     {
       "ticker": "RBRK",
@@ -121,8 +149,11 @@
       "driver": "Cyber-resilience & data backup SaaS",
       "shares": 4.8036472,
       "entry": 75.72,
-      "last": null,
-      "prev_close": null
+      "last": 97.91,
+      "prev_close": 90.07,
+      "beta": 1.1622,
+      "resid_vol": 0.6253,
+      "vol": 0.645
     },
     {
       "ticker": "AAPL",
@@ -132,8 +163,11 @@
       "driver": "Installed base & services margin expansion",
       "shares": 1.0295883,
       "entry": 256.01,
-      "last": null,
-      "prev_close": null
+      "last": 308.26,
+      "prev_close": 313.33,
+      "beta": 0.4757,
+      "resid_vol": 0.2842,
+      "vol": 0.2912
     },
     {
       "ticker": "TSLA",
@@ -143,8 +177,11 @@
       "driver": "Energy storage, FSD & robotaxi optionality",
       "shares": 1.0021248,
       "entry": 358.68,
-      "last": null,
-      "prev_close": null
+      "last": 330.88,
+      "prev_close": 328.58,
+      "beta": 2.3798,
+      "resid_vol": 0.3981,
+      "vol": 0.5276
     },
     {
       "ticker": "NBIS",
@@ -154,8 +191,11 @@
       "driver": "Neocloud GPU capacity build-out in Europe",
       "shares": 1.5693565,
       "entry": 97.9,
-      "last": null,
-      "prev_close": null
+      "last": 184.11,
+      "prev_close": 187.97,
+      "beta": 3.7778,
+      "resid_vol": 1.047,
+      "vol": 1.1794
     },
     {
       "ticker": "TTMI",
@@ -165,8 +205,11 @@
       "driver": "PCBs for AI datacentre & defence programmes",
       "shares": 2.5519135,
       "entry": 60.1,
-      "last": null,
-      "prev_close": null
+      "last": 130.08,
+      "prev_close": 137.21,
+      "beta": 3.2784,
+      "resid_vol": 0.7621,
+      "vol": 0.8974
     },
     {
       "ticker": "SNOW",
@@ -176,19 +219,165 @@
       "driver": "Data cloud consumption & AI workloads",
       "shares": 1.0,
       "entry": 193.74,
-      "last": null,
-      "prev_close": null
+      "last": 334.7,
+      "prev_close": 330.49,
+      "beta": 0.6165,
+      "resid_vol": 0.762,
+      "vol": 0.7635
     }
   ],
   "benchmark": {
     "ticker": "SPY",
     "name": "S&P 500 (SPY ETF)",
-    "entry": null,
-    "shares": 0,
-    "last": null,
-    "prev_close": null
+    "entry": 745.76,
+    "shares": 14.770316,
+    "last": 773.03,
+    "prev_close": 773.26,
+    "vol": 0.1464,
+    "stat_days": 99
   },
-  "history": [],
+  "history": [
+    {
+      "date": "2026-07-01",
+      "value": 11015.11,
+      "bench": 11015.11
+    },
+    {
+      "date": "2026-07-02",
+      "value": 9039.28,
+      "bench": 11000.64
+    },
+    {
+      "date": "2026-07-06",
+      "value": 9195.34,
+      "bench": 11096.64
+    },
+    {
+      "date": "2026-07-07",
+      "value": 9236.03,
+      "bench": 11043.91
+    },
+    {
+      "date": "2026-07-08",
+      "value": 9180.13,
+      "bench": 11009.79
+    },
+    {
+      "date": "2026-07-09",
+      "value": 9295.83,
+      "bench": 11102.99
+    },
+    {
+      "date": "2026-07-10",
+      "value": 9251.28,
+      "bench": 11150.85
+    },
+    {
+      "date": "2026-07-13",
+      "value": 9094.7,
+      "bench": 11065.48
+    },
+    {
+      "date": "2026-07-14",
+      "value": 9240.37,
+      "bench": 11104.77
+    },
+    {
+      "date": "2026-07-15",
+      "value": 9245.64,
+      "bench": 11148.78
+    },
+    {
+      "date": "2026-07-16",
+      "value": 9060.45,
+      "bench": 11088.37
+    },
+    {
+      "date": "2026-07-17",
+      "value": 8922.21,
+      "bench": 10978.63
+    },
+    {
+      "date": "2026-07-20",
+      "value": 8967.18,
+      "bench": 10960.9
+    },
+    {
+      "date": "2026-07-21",
+      "value": 9111.35,
+      "bench": 11052.33
+    },
+    {
+      "date": "2026-07-22",
+      "value": 9038.58,
+      "bench": 11039.48
+    },
+    {
+      "date": "2026-07-23",
+      "value": 8740.05,
+      "bench": 10903.15
+    },
+    {
+      "date": "2026-07-24",
+      "value": 8595.25,
+      "bench": 10914.23
+    },
+    {
+      "date": "2026-07-27",
+      "value": 8575.33,
+      "bench": 10916.59
+    },
+    {
+      "date": "2026-07-28",
+      "value": 8506.8,
+      "bench": 10942.74
+    },
+    {
+      "date": "2026-07-29",
+      "value": 8331.09,
+      "bench": 10774.35
+    },
+    {
+      "date": "2026-07-30",
+      "value": 8600.02,
+      "bench": 10955.0
+    },
+    {
+      "date": "2026-07-31",
+      "value": 8822.16,
+      "bench": 11033.87
+    },
+    {
+      "date": "2026-08-03",
+      "value": 9276.61,
+      "bench": 11191.03
+    },
+    {
+      "date": "2026-08-04",
+      "value": 9457.5,
+      "bench": 11392.79
+    },
+    {
+      "date": "2026-08-05",
+      "value": 9421.0,
+      "bench": 11370.04
+    },
+    {
+      "date": "2026-08-06",
+      "value": 9209.46,
+      "bench": 11351.87
+    },
+    {
+      "date": "2026-08-07",
+      "value": 9385.58,
+      "bench": 11421.29
+    },
+    {
+      "date": "2026-08-10",
+      "value": 9520.89,
+      "bench": 11417.9
+    }
+  ],
   "log": [
     {
       "date": "2026-08-05",
