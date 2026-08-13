@@ -6,8 +6,8 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-08-12 00:09 UTC",
-  "last_price_date": "2026-08-11",
+  "last_updated": "2026-08-13 00:10 UTC",
+  "last_price_date": "2026-08-12",
   "positions": [
     {
       "ticker": "MSFT",
@@ -17,11 +17,11 @@
       "driver": "Enterprise AI & Azure Cloud Leadership",
       "shares": 3.150433,
       "entry": 476.125,
-      "last": 503.81,
-      "prev_close": 506.06,
-      "beta": 0.9324,
-      "resid_vol": 0.3772,
-      "vol": 0.3994
+      "last": 492.43,
+      "prev_close": 503.81,
+      "beta": 0.9213,
+      "resid_vol": 0.3795,
+      "vol": 0.4
     },
     {
       "ticker": "AMZN",
@@ -31,11 +31,11 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 272.27,
-      "prev_close": 278.09,
-      "beta": 1.3883,
-      "resid_vol": 0.3338,
-      "vol": 0.3894
+      "last": 267.28,
+      "prev_close": 272.27,
+      "beta": 1.4027,
+      "resid_vol": 0.3355,
+      "vol": 0.3897
     },
     {
       "ticker": "GOOGL",
@@ -45,11 +45,11 @@
       "driver": "Generative AI Search & YouTube Ads",
       "shares": 4.104585,
       "entry": 365.445,
-      "last": 343.8,
-      "prev_close": 357.52,
-      "beta": 1.5818,
-      "resid_vol": 0.318,
-      "vol": 0.3921
+      "last": 343.54,
+      "prev_close": 343.8,
+      "beta": 1.6013,
+      "resid_vol": 0.3177,
+      "vol": 0.3906
     },
     {
       "ticker": "JPM",
@@ -59,11 +59,11 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 362.04,
-      "prev_close": 359.79,
-      "beta": 0.5969,
-      "resid_vol": 0.2059,
-      "vol": 0.2227
+      "last": 365.18,
+      "prev_close": 362.04,
+      "beta": 0.6069,
+      "resid_vol": 0.206,
+      "vol": 0.2226
     },
     {
       "ticker": "CAT",
@@ -73,11 +73,11 @@
       "driver": "Global Infrastructure & Manufacturing Reshoring",
       "shares": 1.232164,
       "entry": 811.58,
-      "last": 843.37,
-      "prev_close": 837.58,
-      "beta": 1.9153,
-      "resid_vol": 0.3692,
-      "vol": 0.4622
+      "last": 855.6,
+      "prev_close": 843.37,
+      "beta": 1.9695,
+      "resid_vol": 0.3677,
+      "vol": 0.4621
     },
     {
       "ticker": "NEE",
@@ -87,11 +87,11 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 85.74,
-      "prev_close": 84.7,
-      "beta": 0.0738,
-      "resid_vol": 0.2367,
-      "vol": 0.2357
+      "last": 85.78,
+      "prev_close": 85.74,
+      "beta": 0.0032,
+      "resid_vol": 0.2315,
+      "vol": 0.2303
     },
     {
       "ticker": "XOM",
@@ -101,11 +101,11 @@
       "driver": "Low-cost Production & Carbon Capture Tech",
       "shares": 6.516568,
       "entry": 153.455,
-      "last": 159.8,
-      "prev_close": 159.79,
-      "beta": -0.9856,
-      "resid_vol": 0.2627,
-      "vol": 0.2986
+      "last": 159.75,
+      "prev_close": 159.8,
+      "beta": -1.0071,
+      "resid_vol": 0.2623,
+      "vol": 0.2982
     },
     {
       "ticker": "LIN",
@@ -115,11 +115,11 @@
       "driver": "Industrial Gas for Semiconductor & Hydrogen",
       "shares": 1.035042,
       "entry": 483.072,
-      "last": 490.53,
-      "prev_close": 492.46,
-      "beta": 0.0021,
-      "resid_vol": 0.2144,
-      "vol": 0.2133
+      "last": 479.43,
+      "prev_close": 490.53,
+      "beta": -0.0079,
+      "resid_vol": 0.2175,
+      "vol": 0.2163
     },
     {
       "ticker": "JNJ",
@@ -129,11 +129,11 @@
       "driver": "New Drug Pipelines & MedTech Robotics",
       "shares": 1.961015,
       "entry": 254.97,
-      "last": 259.8,
-      "prev_close": 261.81,
-      "beta": -0.3034,
-      "resid_vol": 0.2211,
-      "vol": 0.2244
+      "last": 260.86,
+      "prev_close": 259.8,
+      "beta": -0.341,
+      "resid_vol": 0.2195,
+      "vol": 0.2238
     },
     {
       "ticker": "PG",
@@ -143,11 +143,11 @@
       "driver": "Strong Pricing Power & Dividend Reinvestment",
       "shares": 3.42818,
       "entry": 145.85,
-      "last": 145.21,
-      "prev_close": 146.44,
-      "beta": 0.0623,
-      "resid_vol": 0.2151,
-      "vol": 0.2142
+      "last": 144.08,
+      "prev_close": 145.21,
+      "beta": 0.0551,
+      "resid_vol": 0.2154,
+      "vol": 0.2144
     }
   ],
   "history": [
@@ -185,6 +185,11 @@
       "date": "2026-08-11",
       "value": 10073.23,
       "bench": 10281.81
+    },
+    {
+      "date": "2026-08-12",
+      "value": 10020.22,
+      "bench": 10307.56
     }
   ],
   "log": [
@@ -202,9 +207,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 749.44,
     "shares": 13.343296,
-    "last": 770.56,
-    "prev_close": 773.03,
-    "vol": 0.1465,
+    "last": 772.49,
+    "prev_close": 770.56,
+    "vol": 0.1433,
     "stat_days": 99
   },
   "name": "Sector Core",
