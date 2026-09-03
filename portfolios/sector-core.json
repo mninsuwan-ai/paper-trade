@@ -6,8 +6,8 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-09-02 00:01 UTC",
-  "last_price_date": "2026-09-01",
+  "last_updated": "2026-09-03 00:05 UTC",
+  "last_price_date": "2026-09-02",
   "positions": [
     {
       "ticker": "MSFT",
@@ -19,9 +19,9 @@
       "entry": 476.125,
       "last": 501.02,
       "prev_close": 507.29,
-      "beta": 1.0071,
-      "resid_vol": 0.3787,
-      "vol": 0.3975
+      "beta": 0.9728,
+      "resid_vol": 0.3786,
+      "vol": 0.396
     },
     {
       "ticker": "AMZN",
@@ -31,11 +31,11 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 254.92,
-      "prev_close": 259.77,
-      "beta": 1.3061,
+      "last": 254.98,
+      "prev_close": 254.92,
+      "beta": 1.3114,
       "resid_vol": 0.3382,
-      "vol": 0.3745
+      "vol": 0.3744
     },
     {
       "ticker": "GOOGL",
@@ -47,9 +47,9 @@
       "entry": 365.445,
       "last": 335.02,
       "prev_close": 339.35,
-      "beta": 1.5077,
-      "resid_vol": 0.3145,
-      "vol": 0.3659
+      "beta": 1.5088,
+      "resid_vol": 0.3162,
+      "vol": 0.3673
     },
     {
       "ticker": "JPM",
@@ -59,11 +59,11 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 354.95,
-      "prev_close": 356.02,
-      "beta": 0.3579,
-      "resid_vol": 0.2026,
-      "vol": 0.2065
+      "last": 356.22,
+      "prev_close": 354.95,
+      "beta": 0.3474,
+      "resid_vol": 0.2022,
+      "vol": 0.2058
     },
     {
       "ticker": "CAT",
@@ -75,9 +75,9 @@
       "entry": 811.58,
       "last": 779.16,
       "prev_close": 797.47,
-      "beta": 1.9466,
-      "resid_vol": 0.3741,
-      "vol": 0.4461
+      "beta": 1.9619,
+      "resid_vol": 0.3732,
+      "vol": 0.4457
     },
     {
       "ticker": "NEE",
@@ -87,11 +87,11 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 82.93,
-      "prev_close": 82.34,
-      "beta": -0.0493,
-      "resid_vol": 0.2325,
-      "vol": 0.2314
+      "last": 83.1,
+      "prev_close": 82.93,
+      "beta": -0.0228,
+      "resid_vol": 0.2308,
+      "vol": 0.2296
     },
     {
       "ticker": "XOM",
@@ -103,9 +103,9 @@
       "entry": 153.455,
       "last": 164.55,
       "prev_close": 160.95,
-      "beta": -0.9986,
-      "resid_vol": 0.2477,
-      "vol": 0.2769
+      "beta": -1.0083,
+      "resid_vol": 0.247,
+      "vol": 0.2764
     },
     {
       "ticker": "LIN",
@@ -115,11 +115,11 @@
       "driver": "Industrial Gas for Semiconductor & Hydrogen",
       "shares": 1.035042,
       "entry": 483.072,
-      "last": 486.76,
-      "prev_close": 489.58,
-      "beta": -0.0107,
-      "resid_vol": 0.2102,
-      "vol": 0.2091
+      "last": 487.45,
+      "prev_close": 486.76,
+      "beta": -0.0264,
+      "resid_vol": 0.2093,
+      "vol": 0.2083
     },
     {
       "ticker": "JNJ",
@@ -131,9 +131,9 @@
       "entry": 254.97,
       "last": 271.19,
       "prev_close": 265.85,
-      "beta": -0.5641,
-      "resid_vol": 0.2244,
-      "vol": 0.2343
+      "beta": -0.5633,
+      "resid_vol": 0.2253,
+      "vol": 0.2351
     },
     {
       "ticker": "PG",
@@ -143,11 +143,11 @@
       "driver": "Strong Pricing Power & Dividend Reinvestment",
       "shares": 3.42818,
       "entry": 145.85,
-      "last": 146.21,
-      "prev_close": 145.12,
-      "beta": -0.0612,
-      "resid_vol": 0.2126,
-      "vol": 0.2117
+      "last": 147.64,
+      "prev_close": 146.21,
+      "beta": -0.0409,
+      "resid_vol": 0.2125,
+      "vol": 0.2115
     }
   ],
   "history": [
@@ -247,6 +247,11 @@
       "bench": 10289.02
     },
     {
+      "date": "2026-08-28",
+      "value": 9963.31,
+      "bench": 10265.66
+    },
+    {
       "date": "2026-08-31",
       "value": 9903.86,
       "bench": 10234.98
@@ -272,9 +277,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 749.44,
     "shares": 13.343296,
-    "last": 761.78,
-    "prev_close": 767.05,
-    "vol": 0.1258,
+    "last": 765.16,
+    "prev_close": 761.78,
+    "vol": 0.1252,
     "stat_days": 99
   },
   "name": "Sector Core",
