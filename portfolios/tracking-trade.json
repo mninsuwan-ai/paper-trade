@@ -11,7 +11,7 @@
   "cash": 0.0,
   "track_since": "2026-07-01",
   "track_base": 11015.11,
-  "last_updated": "2026-09-04 23:58 UTC",
+  "last_updated": "2026-09-08 00:14 UTC",
   "last_price_date": "2026-09-04",
   "positions": [
     {
@@ -65,8 +65,8 @@
       "shares": 0.4203916,
       "entry": 2126.09,
       "last": 1978.36,
-      "prev_close": 1991.0601,
-      "beta": 0.5034,
+      "prev_close": 1991.055,
+      "beta": 0.5033,
       "resid_vol": 0.4083,
       "vol": 0.411
     },
@@ -122,9 +122,10 @@
       "entry": 103.53,
       "last": 213.1,
       "prev_close": 214.97,
-      "beta": 1.9111,
-      "resid_vol": 0.5732,
-      "vol": 0.618
+      "beta": 1.9115,
+      "resid_vol": 0.5762,
+      "vol": 0.6211,
+      "stat_dropped": 1
     },
     {
       "ticker": "GOOGL",
@@ -177,8 +178,8 @@
       "shares": 1.0021248,
       "entry": 358.68,
       "last": 354.08,
-      "prev_close": 376.37,
-      "beta": 2.8449,
+      "prev_close": 376.365,
+      "beta": 2.8448,
       "resid_vol": 0.3943,
       "vol": 0.5287
     },
@@ -238,7 +239,7 @@
   "history": [
     {
       "date": "2026-07-01",
-      "value": 9276.45,
+      "value": 11015.11,
       "bench": 11015.11
     },
     {
@@ -363,7 +364,7 @@
     },
     {
       "date": "2026-08-06",
-      "value": 9209.47,
+      "value": 9209.46,
       "bench": 11351.87
     },
     {
@@ -463,7 +464,7 @@
     },
     {
       "date": "2026-09-03",
-      "value": 9377.63,
+      "value": 9377.62,
       "bench": 11419.97
     },
     {
