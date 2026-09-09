@@ -6,8 +6,8 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-09-08 00:14 UTC",
-  "last_price_date": "2026-09-04",
+  "last_updated": "2026-09-09 00:05 UTC",
+  "last_price_date": "2026-09-08",
   "positions": [
     {
       "ticker": "MSFT",
@@ -19,9 +19,9 @@
       "entry": 476.125,
       "last": 499.7,
       "prev_close": 510.12,
-      "beta": 0.9448,
-      "resid_vol": 0.3744,
-      "vol": 0.3907
+      "beta": 0.9402,
+      "resid_vol": 0.3752,
+      "vol": 0.3914
     },
     {
       "ticker": "AMZN",
@@ -31,11 +31,11 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 258.51,
-      "prev_close": 258.9,
-      "beta": 1.2838,
+      "last": 256.97,
+      "prev_close": 258.51,
+      "beta": 1.2811,
       "resid_vol": 0.3358,
-      "vol": 0.3704
+      "vol": 0.3705
     },
     {
       "ticker": "GOOGL",
@@ -47,9 +47,9 @@
       "entry": 365.445,
       "last": 338.46,
       "prev_close": 342.48,
-      "beta": 1.4789,
-      "resid_vol": 0.3132,
-      "vol": 0.362
+      "beta": 1.4802,
+      "resid_vol": 0.3147,
+      "vol": 0.3638
     },
     {
       "ticker": "JPM",
@@ -59,11 +59,11 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 358.64,
-      "prev_close": 362.06,
-      "beta": 0.421,
-      "resid_vol": 0.1994,
-      "vol": 0.2052
+      "last": 353.51,
+      "prev_close": 358.64,
+      "beta": 0.4322,
+      "resid_vol": 0.1998,
+      "vol": 0.206
     },
     {
       "ticker": "CAT",
@@ -75,9 +75,9 @@
       "entry": 811.58,
       "last": 813.94,
       "prev_close": 800.14,
-      "beta": 2.0173,
-      "resid_vol": 0.3661,
-      "vol": 0.4425
+      "beta": 2.0174,
+      "resid_vol": 0.368,
+      "vol": 0.4447
     },
     {
       "ticker": "NEE",
@@ -87,11 +87,11 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 83.43,
-      "prev_close": 84.06,
-      "beta": 0.0194,
-      "resid_vol": 0.2314,
-      "vol": 0.2302
+      "last": 83.83,
+      "prev_close": 83.43,
+      "beta": 0.0114,
+      "resid_vol": 0.2312,
+      "vol": 0.2301
     },
     {
       "ticker": "XOM",
@@ -103,9 +103,9 @@
       "entry": 153.455,
       "last": 159.47,
       "prev_close": 162.21,
-      "beta": -0.9777,
-      "resid_vol": 0.2475,
-      "vol": 0.2747
+      "beta": -0.9828,
+      "resid_vol": 0.2466,
+      "vol": 0.2744
     },
     {
       "ticker": "LIN",
@@ -115,11 +115,11 @@
       "driver": "Industrial Gas for Semiconductor & Hydrogen",
       "shares": 1.035042,
       "entry": 483.072,
-      "last": 477.57,
-      "prev_close": 482.19,
-      "beta": 0.0008,
-      "resid_vol": 0.2085,
-      "vol": 0.2075
+      "last": 468.38,
+      "prev_close": 477.57,
+      "beta": 0.0201,
+      "resid_vol": 0.2107,
+      "vol": 0.2096
     },
     {
       "ticker": "JNJ",
@@ -131,9 +131,9 @@
       "entry": 254.97,
       "last": 275.23,
       "prev_close": 278.43,
-      "beta": -0.5392,
-      "resid_vol": 0.2271,
-      "vol": 0.2357
+      "beta": -0.5347,
+      "resid_vol": 0.2264,
+      "vol": 0.2349
     },
     {
       "ticker": "PG",
@@ -143,11 +143,11 @@
       "driver": "Strong Pricing Power & Dividend Reinvestment",
       "shares": 3.42818,
       "entry": 145.85,
-      "last": 146.44,
-      "prev_close": 146.92,
-      "beta": -0.048,
-      "resid_vol": 0.2122,
-      "vol": 0.2112
+      "last": 145.58,
+      "prev_close": 146.44,
+      "beta": -0.0408,
+      "resid_vol": 0.2124,
+      "vol": 0.2114
     }
   ],
   "history": [
@@ -292,9 +292,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 749.44,
     "shares": 13.343296,
-    "last": 770.19,
-    "prev_close": 773.17,
-    "vol": 0.1246,
+    "last": 765.96,
+    "prev_close": 770.19,
+    "vol": 0.125,
     "stat_days": 99
   },
   "name": "Sector Core",

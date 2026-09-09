@@ -11,8 +11,8 @@
   "cash": 0.0,
   "track_since": "2026-07-01",
   "track_base": 11015.11,
-  "last_updated": "2026-09-08 00:14 UTC",
-  "last_price_date": "2026-09-04",
+  "last_updated": "2026-09-09 00:05 UTC",
+  "last_price_date": "2026-09-08",
   "positions": [
     {
       "ticker": "META",
@@ -24,9 +24,9 @@
       "entry": 683.23,
       "last": 616.77,
       "prev_close": 610.68,
-      "beta": 1.0116,
-      "resid_vol": 0.4112,
-      "vol": 0.4281
+      "beta": 1.0098,
+      "resid_vol": 0.4132,
+      "vol": 0.43
     },
     {
       "ticker": "AMZN",
@@ -36,11 +36,11 @@
       "driver": "AWS cloud & e-commerce dominance",
       "shares": 3.9271609,
       "entry": 225.44,
-      "last": 258.51,
-      "prev_close": 258.9,
-      "beta": 1.2838,
+      "last": 256.97,
+      "prev_close": 258.51,
+      "beta": 1.2811,
       "resid_vol": 0.3358,
-      "vol": 0.3704
+      "vol": 0.3705
     },
     {
       "ticker": "DOCN",
@@ -50,11 +50,11 @@
       "driver": "Developer-first cloud & GPU droplets",
       "shares": 7.0,
       "entry": 29.66,
-      "last": 112.47,
-      "prev_close": 109.4,
-      "beta": 3.0484,
-      "resid_vol": 0.8946,
-      "vol": 0.9677
+      "last": 126.69,
+      "prev_close": 112.47,
+      "beta": 2.875,
+      "resid_vol": 0.8996,
+      "vol": 0.9644
     },
     {
       "ticker": "MELI",
@@ -65,10 +65,10 @@
       "shares": 0.4203916,
       "entry": 2126.09,
       "last": 1978.36,
-      "prev_close": 1991.055,
-      "beta": 0.5033,
-      "resid_vol": 0.4083,
-      "vol": 0.411
+      "prev_close": 1991.0601,
+      "beta": 0.5104,
+      "resid_vol": 0.4078,
+      "vol": 0.4107
     },
     {
       "ticker": "AXON",
@@ -78,11 +78,11 @@
       "driver": "Public-safety hardware plus recurring software",
       "shares": 1.4715992,
       "entry": 503.62,
-      "last": 515.67,
-      "prev_close": 538.15,
-      "beta": 1.6326,
-      "resid_vol": 0.6587,
-      "vol": 0.6861
+      "last": 505.43,
+      "prev_close": 515.67,
+      "beta": 1.6524,
+      "resid_vol": 0.6574,
+      "vol": 0.6859
     },
     {
       "ticker": "NVDA",
@@ -94,9 +94,9 @@
       "entry": 160.79,
       "last": 230.36,
       "prev_close": 228.45,
-      "beta": 2.0494,
-      "resid_vol": 0.3291,
-      "vol": 0.4152
+      "beta": 2.0512,
+      "resid_vol": 0.3306,
+      "vol": 0.4172
     },
     {
       "ticker": "MSFT",
@@ -108,9 +108,9 @@
       "entry": 470.65,
       "last": 499.7,
       "prev_close": 510.12,
-      "beta": 0.9448,
-      "resid_vol": 0.3744,
-      "vol": 0.3907
+      "beta": 0.9402,
+      "resid_vol": 0.3752,
+      "vol": 0.3914
     },
     {
       "ticker": "CRWD",
@@ -120,11 +120,11 @@
       "driver": "Falcon platform consolidation in security",
       "shares": 3.0,
       "entry": 103.53,
-      "last": 213.1,
-      "prev_close": 214.97,
-      "beta": 1.9115,
-      "resid_vol": 0.5762,
-      "vol": 0.6211,
+      "last": 210.02,
+      "prev_close": 213.1,
+      "beta": 1.9199,
+      "resid_vol": 0.5763,
+      "vol": 0.6219,
       "stat_dropped": 1
     },
     {
@@ -137,9 +137,9 @@
       "entry": 185.38,
       "last": 338.46,
       "prev_close": 342.48,
-      "beta": 1.4789,
-      "resid_vol": 0.3132,
-      "vol": 0.362
+      "beta": 1.4802,
+      "resid_vol": 0.3147,
+      "vol": 0.3638
     },
     {
       "ticker": "RBRK",
@@ -151,9 +151,9 @@
       "entry": 75.72,
       "last": 93.67,
       "prev_close": 92.14,
-      "beta": 1.4813,
-      "resid_vol": 0.6248,
-      "vol": 0.6484
+      "beta": 1.4806,
+      "resid_vol": 0.628,
+      "vol": 0.6517
     },
     {
       "ticker": "AAPL",
@@ -163,10 +163,10 @@
       "driver": "Installed base & services margin expansion",
       "shares": 1.0295883,
       "entry": 256.01,
-      "last": 319.97,
-      "prev_close": 328.21,
-      "beta": 0.3508,
-      "resid_vol": 0.2893,
+      "last": 316.22,
+      "prev_close": 319.97,
+      "beta": 0.3664,
+      "resid_vol": 0.289,
       "vol": 0.2911
     },
     {
@@ -178,10 +178,10 @@
       "shares": 1.0021248,
       "entry": 358.68,
       "last": 354.08,
-      "prev_close": 376.365,
-      "beta": 2.8448,
-      "resid_vol": 0.3943,
-      "vol": 0.5287
+      "prev_close": 376.37,
+      "beta": 2.8476,
+      "resid_vol": 0.396,
+      "vol": 0.5313
     },
     {
       "ticker": "NBIS",
@@ -191,11 +191,11 @@
       "driver": "Neocloud GPU capacity build-out in Europe",
       "shares": 1.5693565,
       "entry": 97.9,
-      "last": 226.39,
-      "prev_close": 210.63,
-      "beta": 3.9744,
-      "resid_vol": 1.155,
-      "vol": 1.2512
+      "last": 243.88,
+      "prev_close": 226.39,
+      "beta": 3.8768,
+      "resid_vol": 1.165,
+      "vol": 1.2562
     },
     {
       "ticker": "TTMI",
@@ -207,9 +207,9 @@
       "entry": 60.1,
       "last": 125.6,
       "prev_close": 115.39,
-      "beta": 3.4056,
-      "resid_vol": 0.7538,
-      "vol": 0.8616
+      "beta": 3.4063,
+      "resid_vol": 0.7577,
+      "vol": 0.866
     },
     {
       "ticker": "SNOW",
@@ -219,11 +219,11 @@
       "driver": "Data cloud consumption & AI workloads",
       "shares": 1.0,
       "entry": 193.74,
-      "last": 337.18,
-      "prev_close": 356.47,
-      "beta": 0.8711,
-      "resid_vol": 0.7252,
-      "vol": 0.7296
+      "last": 335.5,
+      "prev_close": 337.18,
+      "beta": 0.8837,
+      "resid_vol": 0.7248,
+      "vol": 0.7295
     }
   ],
   "benchmark": {
@@ -231,9 +231,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 745.76,
     "shares": 14.770316,
-    "last": 770.19,
-    "prev_close": 773.17,
-    "vol": 0.1246,
+    "last": 765.96,
+    "prev_close": 770.19,
+    "vol": 0.125,
     "stat_days": 99
   },
   "history": [
@@ -364,7 +364,7 @@
     },
     {
       "date": "2026-08-06",
-      "value": 9209.46,
+      "value": 9209.47,
       "bench": 11351.87
     },
     {
@@ -464,7 +464,7 @@
     },
     {
       "date": "2026-09-03",
-      "value": 9377.62,
+      "value": 9377.63,
       "bench": 11419.97
     },
     {
