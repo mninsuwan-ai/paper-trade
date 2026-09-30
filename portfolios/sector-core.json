@@ -6,8 +6,8 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-09-29 01:49 UTC",
-  "last_price_date": "2026-09-28",
+  "last_updated": "2026-09-30 01:14 UTC",
+  "last_price_date": "2026-09-29",
   "positions": [
     {
       "ticker": "MSFT",
@@ -19,9 +19,9 @@
       "entry": 476.125,
       "last": 509.22,
       "prev_close": 516.17,
-      "beta": 1.0625,
-      "resid_vol": 0.3608,
-      "vol": 0.3827
+      "beta": 1.073,
+      "resid_vol": 0.3615,
+      "vol": 0.384
     },
     {
       "ticker": "AMZN",
@@ -31,11 +31,11 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 246.15,
-      "prev_close": 249.67,
-      "beta": 1.3883,
-      "resid_vol": 0.3311,
-      "vol": 0.3722
+      "last": 246.67,
+      "prev_close": 246.15,
+      "beta": 1.3813,
+      "resid_vol": 0.331,
+      "vol": 0.3716
     },
     {
       "ticker": "GOOGL",
@@ -47,9 +47,9 @@
       "entry": 365.445,
       "last": 342.75,
       "prev_close": 343.92,
-      "beta": 1.2782,
-      "resid_vol": 0.2957,
-      "vol": 0.3347
+      "beta": 1.2816,
+      "resid_vol": 0.2971,
+      "vol": 0.3364
     },
     {
       "ticker": "JPM",
@@ -59,11 +59,11 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 336.59,
-      "prev_close": 343.06,
-      "beta": 0.4593,
-      "resid_vol": 0.2042,
-      "vol": 0.2111
+      "last": 334.98,
+      "prev_close": 336.59,
+      "beta": 0.4454,
+      "resid_vol": 0.1997,
+      "vol": 0.2063
     },
     {
       "ticker": "CAT",
@@ -75,9 +75,9 @@
       "entry": 811.58,
       "last": 819.95,
       "prev_close": 821.58,
-      "beta": 1.8505,
-      "resid_vol": 0.3452,
-      "vol": 0.4139
+      "beta": 1.835,
+      "resid_vol": 0.3443,
+      "vol": 0.4126
     },
     {
       "ticker": "NEE",
@@ -87,11 +87,11 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 75.49,
-      "prev_close": 76.08,
-      "beta": 0.0964,
-      "resid_vol": 0.1927,
-      "vol": 0.192
+      "last": 75.89,
+      "prev_close": 75.49,
+      "beta": 0.0823,
+      "resid_vol": 0.1905,
+      "vol": 0.1898
     },
     {
       "ticker": "XOM",
@@ -103,9 +103,9 @@
       "entry": 153.455,
       "last": 162.52,
       "prev_close": 160.59,
-      "beta": -0.9194,
-      "resid_vol": 0.2466,
-      "vol": 0.2708
+      "beta": -0.9302,
+      "resid_vol": 0.246,
+      "vol": 0.2711
     },
     {
       "ticker": "LIN",
@@ -117,9 +117,9 @@
       "entry": 483.072,
       "last": 472.04,
       "prev_close": 469.89,
-      "beta": 0.002,
-      "resid_vol": 0.1999,
-      "vol": 0.1989
+      "beta": -0.0071,
+      "resid_vol": 0.1993,
+      "vol": 0.1983
     },
     {
       "ticker": "JNJ",
@@ -129,11 +129,11 @@
       "driver": "New Drug Pipelines & MedTech Robotics",
       "shares": 1.961015,
       "entry": 254.97,
-      "last": 271.95,
-      "prev_close": 271.22,
-      "beta": -0.4875,
-      "resid_vol": 0.2196,
-      "vol": 0.2268
+      "last": 267.57,
+      "prev_close": 271.95,
+      "beta": -0.4878,
+      "resid_vol": 0.2208,
+      "vol": 0.2279
     },
     {
       "ticker": "PG",
@@ -145,8 +145,8 @@
       "entry": 145.85,
       "last": 149.03,
       "prev_close": 146.23,
-      "beta": -0.1908,
-      "resid_vol": 0.1989,
+      "beta": -0.1986,
+      "resid_vol": 0.1987,
       "vol": 0.1993
     }
   ],
@@ -208,7 +208,7 @@
     },
     {
       "date": "2026-08-18",
-      "value": 9983.21,
+      "value": 9983.22,
       "bench": 10240.31
     },
     {
@@ -367,9 +367,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 749.44,
     "shares": 13.343296,
-    "last": 765.61,
-    "prev_close": 771.35,
-    "vol": 0.1248,
+    "last": 764.2,
+    "prev_close": 765.61,
+    "vol": 0.1247,
     "stat_days": 99
   },
   "name": "Sector Core",
