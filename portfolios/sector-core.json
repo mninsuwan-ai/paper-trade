@@ -6,8 +6,8 @@
   "price_basis": "Official regular-session OPEN price of 2026-08-03 (NYSE/NASDAQ 09:30 ET)",
   "fractional_shares": true,
   "cash": 0.000491,
-  "last_updated": "2026-11-03 03:26 UTC",
-  "last_price_date": "2026-11-02",
+  "last_updated": "2026-11-04 02:10 UTC",
+  "last_price_date": "2026-11-03",
   "positions": [
     {
       "ticker": "MSFT",
@@ -19,9 +19,9 @@
       "entry": 476.125,
       "last": 507.12,
       "prev_close": 521.91,
-      "beta": 1.3533,
-      "resid_vol": 0.3214,
-      "vol": 0.3567
+      "beta": 1.3619,
+      "resid_vol": 0.3227,
+      "vol": 0.3586
     },
     {
       "ticker": "AMZN",
@@ -31,11 +31,11 @@
       "driver": "AWS Cloud & E-commerce Dominance",
       "shares": 5.390061,
       "entry": 278.29,
-      "last": 245.63,
-      "prev_close": 240.35,
-      "beta": 1.5643,
-      "resid_vol": 0.3394,
-      "vol": 0.3841
+      "last": 250.69,
+      "prev_close": 245.63,
+      "beta": 1.593,
+      "resid_vol": 0.3387,
+      "vol": 0.3849
     },
     {
       "ticker": "GOOGL",
@@ -47,9 +47,9 @@
       "entry": 365.445,
       "last": 278.99,
       "prev_close": 279.84,
-      "beta": 1.5729,
-      "resid_vol": 0.3397,
-      "vol": 0.3847
+      "beta": 1.5732,
+      "resid_vol": 0.3414,
+      "vol": 0.3865
     },
     {
       "ticker": "JPM",
@@ -59,11 +59,11 @@
       "driver": "Market Share Expansion & Banking Scale",
       "shares": 2.826855,
       "entry": 353.75,
-      "last": 340.58,
-      "prev_close": 337.04,
-      "beta": 0.4176,
-      "resid_vol": 0.1871,
-      "vol": 0.1925
+      "last": 337.98,
+      "prev_close": 340.58,
+      "beta": 0.393,
+      "resid_vol": 0.185,
+      "vol": 0.1896
     },
     {
       "ticker": "CAT",
@@ -75,9 +75,9 @@
       "entry": 811.58,
       "last": 613.62,
       "prev_close": 622.75,
-      "beta": 1.9689,
-      "resid_vol": 0.3592,
-      "vol": 0.4251
+      "beta": 1.9611,
+      "resid_vol": 0.3608,
+      "vol": 0.4263
     },
     {
       "ticker": "NEE",
@@ -87,11 +87,11 @@
       "driver": "Clean Energy Supply for AI Data Centers",
       "shares": 11.527378,
       "entry": 86.75,
-      "last": 85.03,
-      "prev_close": 83.71,
-      "beta": -0.1132,
-      "resid_vol": 0.1751,
-      "vol": 0.1747
+      "last": 84.33,
+      "prev_close": 85.03,
+      "beta": -0.1313,
+      "resid_vol": 0.1741,
+      "vol": 0.1739
     },
     {
       "ticker": "XOM",
@@ -103,9 +103,9 @@
       "entry": 153.455,
       "last": 179.67,
       "prev_close": 187.25,
-      "beta": -0.9776,
-      "resid_vol": 0.2296,
-      "vol": 0.2555
+      "beta": -0.9834,
+      "resid_vol": 0.2306,
+      "vol": 0.2568
     },
     {
       "ticker": "LIN",
@@ -115,11 +115,11 @@
       "driver": "Industrial Gas for Semiconductor & Hydrogen",
       "shares": 1.035042,
       "entry": 483.072,
-      "last": 519.72,
-      "prev_close": 514.24,
-      "beta": -0.1585,
-      "resid_vol": 0.1904,
-      "vol": 0.1903
+      "last": 511.55,
+      "prev_close": 519.72,
+      "beta": -0.1829,
+      "resid_vol": 0.1901,
+      "vol": 0.1904
     },
     {
       "ticker": "JNJ",
@@ -131,9 +131,9 @@
       "entry": 254.97,
       "last": 270.56,
       "prev_close": 273.2,
-      "beta": -0.5296,
-      "resid_vol": 0.2466,
-      "vol": 0.253
+      "beta": -0.5415,
+      "resid_vol": 0.2471,
+      "vol": 0.2539
     },
     {
       "ticker": "PG",
@@ -143,11 +143,11 @@
       "driver": "Strong Pricing Power & Dividend Reinvestment",
       "shares": 3.42818,
       "entry": 145.85,
-      "last": 163.56,
-      "prev_close": 161.57,
-      "beta": -0.2047,
-      "resid_vol": 0.2073,
-      "vol": 0.2077
+      "last": 162.06,
+      "prev_close": 163.56,
+      "beta": -0.2183,
+      "resid_vol": 0.2074,
+      "vol": 0.2079
     }
   ],
   "history": [
@@ -492,9 +492,9 @@
     "name": "S&P 500 (SPY ETF)",
     "entry": 749.44,
     "shares": 13.343296,
-    "last": 752.1,
-    "prev_close": 755.72,
-    "vol": 0.117,
+    "last": 754.35,
+    "prev_close": 752.1,
+    "vol": 0.1167,
     "stat_days": 99
   },
   "name": "Sector Core",
